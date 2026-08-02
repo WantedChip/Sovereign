@@ -196,7 +196,7 @@ export function Architecture() {
             <div className="text-3xl font-bold tracking-tight text-parchment font-mono">$0</div>
             <div className="text-xs font-mono font-semibold uppercase tracking-wider text-brass">Hosting Infrastructure</div>
             <p className="text-[11px] text-muted-foreground font-sans">
-              Deployed cleanly as a static web application on Cloudflare Pages.
+              Deployed cleanly as a static web application on Cloudflare Workers.
             </p>
           </div>
         </div>

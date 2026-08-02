@@ -3,7 +3,7 @@
 **Local-first collaborative knowledge workspace with on-device AI.**
 
 ![License](https://img.shields.io/badge/license-AGPL--3.0-blue)
-![Version](https://img.shields.io/badge/version-v0.0.0--dev-orange)
+![Version](https://img.shields.io/badge/version-v0.1.0-emerald)
 
 ---
 
@@ -13,7 +13,7 @@ Sovereign is a privacy-first Progressive Web App (PWA) that operates entirely in
 
 Beyond editing, Sovereign provides a 2D knowledge graph rendered with Cytoscape.js, giving users a visual map of how their documents interconnect through wiki-style bidirectional links. Hybrid search — combining full-text and semantic vector search via Orama — lets users find information by meaning, not just keywords.
 
-What sets Sovereign apart is its on-device AI pipeline. Using WebGPU acceleration, Sovereign runs embedding models locally via `@huggingface/transformers` and large language models via `@mlc-ai/web-llm` to power RAG-based AI chat and inline writing assistance — all without sending a single byte to external servers. The entire application is deployed as a static site on Cloudflare Pages at $0 hosting cost.
+What sets Sovereign apart is its on-device AI pipeline. Using WebGPU acceleration, Sovereign runs embedding models locally via `@huggingface/transformers` and large language models via `@mlc-ai/web-llm` to power RAG-based AI chat and inline writing assistance — all without sending a single byte to external servers. The entire application is deployed as a static site on Cloudflare Workers at $0 hosting cost.
 
 ## Tech Stack
 
