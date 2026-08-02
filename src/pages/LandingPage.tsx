@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/landing/Navbar"
 import { Hero } from "@/components/landing/Hero"
+import { Features } from "@/components/landing/Features"
 
 export function LandingPage() {
   return (
@@ -7,6 +8,7 @@ export function LandingPage() {
       <Navbar />
       <main className="flex-1">
         <Hero />
+        <Features />
       </main>
     </div>
   )
