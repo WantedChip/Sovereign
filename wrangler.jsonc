@@ -2,6 +2,7 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "sovereign",
   "compatibility_date": "2026-08-03",
+  "workers_dev": true,
   "assets": {
     "not_found_handling": "single-page-application"
   }
