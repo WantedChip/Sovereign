@@ -11,7 +11,7 @@ import {
   GitFork,
   ShieldCheck,
   Zap,
-  DollarSign
+  DollarSign,
 } from "lucide-react"
 
 interface SurveyStation {
@@ -30,7 +30,7 @@ const stations: SurveyStation[] = [
     name: "Rich-Text Editor",
     tech: "Tiptap v3 Engine",
     description: "Zero-latency WYSIWYG editor with live markdown serialization.",
-    icon: FileText
+    icon: FileText,
   },
   {
     pointId: "PT.02",
@@ -38,7 +38,7 @@ const stations: SurveyStation[] = [
     name: "CRDT Sync Transect",
     tech: "Yjs + y-webrtc",
     description: "Peer-to-peer WebRTC data channels for multi-user CRDT sync.",
-    icon: Share2
+    icon: Share2,
   },
   {
     pointId: "PT.03",
@@ -46,7 +46,7 @@ const stations: SurveyStation[] = [
     name: "Local Storage Worker",
     tech: "OPFS + Dexie.js",
     description: "Origin Private File System worker for fast local persistence.",
-    icon: HardDrive
+    icon: HardDrive,
   },
   {
     pointId: "PT.04",
@@ -54,7 +54,7 @@ const stations: SurveyStation[] = [
     name: "On-Device AI Station",
     tech: "WebLLM + Transformers",
     description: "WebGPU accelerated local LLM inference and vector embedding.",
-    icon: Cpu
+    icon: Cpu,
   },
   {
     pointId: "PT.05",
@@ -62,7 +62,7 @@ const stations: SurveyStation[] = [
     name: "Hybrid Search Index",
     tech: "Orama Vector Engine",
     description: "In-browser BM25 keyword matching + cosine vector similarity.",
-    icon: Search
+    icon: Search,
   },
   {
     pointId: "PT.06",
@@ -70,18 +70,24 @@ const stations: SurveyStation[] = [
     name: "Knowledge Topology",
     tech: "Cytoscape.js v3",
     description: "Bidirectional wikilink extraction & interactive 2D graph renderer.",
-    icon: GitFork
-  }
+    icon: GitFork,
+  },
 ]
 
 export function Architecture() {
   const [activePoint, setActivePoint] = useState<string | null>(null)
 
   return (
-    <section id="architecture" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-b border-slate-line">
+    <section
+      id="architecture"
+      className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-b border-slate-line"
+    >
       {/* Section Header */}
       <div className="relative z-10 text-center space-y-4 max-w-3xl mx-auto mb-16">
-        <Badge variant="default" className="px-3 py-0.5 text-[10px] font-mono tracking-widest uppercase">
+        <Badge
+          variant="default"
+          className="px-3 py-0.5 text-[10px] font-mono tracking-widest uppercase"
+        >
           TRANSECT MAP & TOPOLOGY
         </Badge>
 
@@ -90,8 +96,8 @@ export function Architecture() {
         </h2>
 
         <p className="text-base sm:text-lg text-muted-foreground leading-relaxed font-sans">
-          Sovereign charts all data flow inside your device's browser sandbox.
-          Plotted below as fixed survey markers, every subsystem functions as an independent local module.
+          Sovereign charts all data flow inside your device's browser sandbox. Plotted below as
+          fixed survey markers, every subsystem functions as an independent local module.
         </p>
       </div>
 
@@ -115,7 +121,8 @@ export function Architecture() {
                   BROWSER / PWA CLIENT HUB
                 </h3>
                 <p className="text-xs text-muted-foreground font-sans mt-1">
-                  Primary client runtime orchestrating local storage, Web Workers, CRDT sync, and WebGPU compute.
+                  Primary client runtime orchestrating local storage, Web Workers, CRDT sync, and
+                  WebGPU compute.
                 </p>
               </div>
             </div>
@@ -143,7 +150,10 @@ export function Architecture() {
                     <div className="w-9 h-9 rounded-sm border border-slate-line bg-ink flex items-center justify-center text-brass">
                       <IconComp className="w-4 h-4" />
                     </div>
-                    <Badge variant="outline" className="text-[9px] font-mono border-slate-line text-muted-foreground">
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] font-mono border-slate-line text-muted-foreground"
+                    >
                       {station.coordRef}
                     </Badge>
                   </div>
@@ -172,7 +182,9 @@ export function Architecture() {
               <ShieldCheck className="w-4 h-4 text-moss" />
             </div>
             <div className="text-3xl font-bold tracking-tight text-parchment font-mono">0</div>
-            <div className="text-xs font-mono font-semibold uppercase tracking-wider text-brass">Cloud Servers</div>
+            <div className="text-xs font-mono font-semibold uppercase tracking-wider text-brass">
+              Cloud Servers
+            </div>
             <p className="text-[11px] text-muted-foreground font-sans">
               Zero central servers or telemetry endpoints receiving your documents.
             </p>
@@ -183,7 +195,9 @@ export function Architecture() {
               <Zap className="w-4 h-4 text-brass" />
             </div>
             <div className="text-3xl font-bold tracking-tight text-parchment font-mono">100%</div>
-            <div className="text-xs font-mono font-semibold uppercase tracking-wider text-brass">Offline Capable</div>
+            <div className="text-xs font-mono font-semibold uppercase tracking-wider text-brass">
+              Offline Capable
+            </div>
             <p className="text-[11px] text-muted-foreground font-sans">
               Complete editor, search, and AI functionality preserved without network.
             </p>
@@ -194,7 +208,9 @@ export function Architecture() {
               <DollarSign className="w-4 h-4 text-oxblood" />
             </div>
             <div className="text-3xl font-bold tracking-tight text-parchment font-mono">$0</div>
-            <div className="text-xs font-mono font-semibold uppercase tracking-wider text-brass">Hosting Infrastructure</div>
+            <div className="text-xs font-mono font-semibold uppercase tracking-wider text-brass">
+              Hosting Infrastructure
+            </div>
             <p className="text-[11px] text-muted-foreground font-sans">
               Deployed cleanly as a static web application on Cloudflare Workers.
             </p>

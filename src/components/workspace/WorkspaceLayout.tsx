@@ -18,7 +18,7 @@ import {
   Share2,
   Lock,
   Search,
-  Command
+  Command,
 } from "lucide-react"
 
 export function WorkspaceLayout() {
@@ -132,7 +132,10 @@ export function WorkspaceLayout() {
             <div className="flex items-center gap-2">
               <FileText className="w-3.5 h-3.5 text-brass" />
               <span className="font-semibold text-parchment font-sans">Welcome to Sovereign</span>
-              <Badge variant="outline" className="text-[9px] py-0 border-slate-line text-muted-foreground">
+              <Badge
+                variant="outline"
+                className="text-[9px] py-0 border-slate-line text-muted-foreground"
+              >
                 Saved Locally
               </Badge>
             </div>
@@ -147,7 +150,10 @@ export function WorkspaceLayout() {
 
           {/* Main Editor Canvas Container */}
           <div className="flex-1 p-6 md:p-10 overflow-y-auto flex flex-col items-center justify-center">
-            <Card coord="N·00" className="max-w-2xl w-full text-center p-8 space-y-6 border-brass/60">
+            <Card
+              coord="N·00"
+              className="max-w-2xl w-full text-center p-8 space-y-6 border-brass/60"
+            >
               <CardHeader className="p-0 space-y-2">
                 <div className="w-12 h-12 rounded-sm bg-brass/10 border border-brass flex items-center justify-center mx-auto mb-2">
                   <FileText className="w-6 h-6 text-brass" />
@@ -156,7 +162,9 @@ export function WorkspaceLayout() {
                   Core Document Editor
                 </CardTitle>
                 <CardDescription className="text-sm max-w-md mx-auto font-sans">
-                  The Tiptap v3 rich-text editor with markdown serialization, slash commands, and [[wikilinks]] is scheduled for sub-phase <span className="text-brass font-semibold">v0.2</span>.
+                  The Tiptap v3 rich-text editor with markdown serialization, slash commands, and
+                  [[wikilinks]] is scheduled for sub-phase{" "}
+                  <span className="text-brass font-semibold">v0.2</span>.
                 </CardDescription>
               </CardHeader>
 
@@ -167,7 +175,9 @@ export function WorkspaceLayout() {
                       <Command className="w-3.5 h-3.5 text-brass" />
                       <span>Slash Commands</span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground font-sans">Type / to insert code blocks, callouts, or tables.</p>
+                    <p className="text-[11px] text-muted-foreground font-sans">
+                      Type / to insert code blocks, callouts, or tables.
+                    </p>
                   </div>
 
                   <div className="survey-card p-3 rounded-sm border-slate-line space-y-1">
@@ -175,7 +185,9 @@ export function WorkspaceLayout() {
                       <Search className="w-3.5 h-3.5 text-brass" />
                       <span>[[Wiki Links]]</span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground font-sans">Type [[ to connect entries into the knowledge graph.</p>
+                    <p className="text-[11px] text-muted-foreground font-sans">
+                      Type [[ to connect entries into the knowledge graph.
+                    </p>
                   </div>
                 </div>
 
@@ -222,16 +234,21 @@ export function WorkspaceLayout() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-xs font-mono">
                     <span className="font-semibold text-brass uppercase">Knowledge Graph</span>
-                    <Badge variant="outline" className="text-[9px]">v0.5</Badge>
+                    <Badge variant="outline" className="text-[9px]">
+                      v0.5
+                    </Badge>
                   </div>
 
                   <div className="survey-card p-6 rounded-sm border-slate-line text-center space-y-3">
                     <div className="w-10 h-10 rounded-sm bg-brass/10 border border-brass flex items-center justify-center mx-auto">
                       <Network className="w-5 h-5 text-brass" />
                     </div>
-                    <div className="text-xs font-mono font-semibold text-parchment">Cytoscape.js Chart</div>
+                    <div className="text-xs font-mono font-semibold text-parchment">
+                      Cytoscape.js Chart
+                    </div>
                     <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      Interactive bidirectional graph visualization connecting notes via [[wikilinks]] arrives in sub-phase v0.5.
+                      Interactive bidirectional graph visualization connecting notes via
+                      [[wikilinks]] arrives in sub-phase v0.5.
                     </p>
                   </div>
                 </div>
@@ -239,16 +256,21 @@ export function WorkspaceLayout() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-xs font-mono">
                     <span className="font-semibold text-brass uppercase">WebGPU AI Co-Pilot</span>
-                    <Badge variant="outline" className="text-[9px]">v0.7</Badge>
+                    <Badge variant="outline" className="text-[9px]">
+                      v0.7
+                    </Badge>
                   </div>
 
                   <div className="survey-card p-6 rounded-sm border-slate-line text-center space-y-3">
                     <div className="w-10 h-10 rounded-sm bg-brass/10 border border-brass flex items-center justify-center mx-auto">
                       <Sparkles className="w-5 h-5 text-brass" />
                     </div>
-                    <div className="text-xs font-mono font-semibold text-parchment">On-Device LLM & RAG</div>
+                    <div className="text-xs font-mono font-semibold text-parchment">
+                      On-Device LLM & RAG
+                    </div>
                     <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      Local GPU inference powered by WebLLM for private RAG query synthesis arrives in sub-phase v0.7.
+                      Local GPU inference powered by WebLLM for private RAG query synthesis arrives
+                      in sub-phase v0.7.
                     </p>
                   </div>
                 </div>

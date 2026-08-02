@@ -32,8 +32,9 @@ export function Hero() {
 
         {/* Subtitle — Inter Neutral Body */}
         <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-sans leading-relaxed">
-          Sovereign is a self-contained knowledge workspace that operates entirely inside your browser.
-          Data is charted locally via OPFS, synchronized peer-to-peer over WebRTC, and analyzed with on-device WebGPU AI inference.
+          Sovereign is a self-contained knowledge workspace that operates entirely inside your
+          browser. Data is charted locally via OPFS, synchronized peer-to-peer over WebRTC, and
+          analyzed with on-device WebGPU AI inference.
         </p>
 
         {/* CTA Buttons — Stamp/Seal Style */}

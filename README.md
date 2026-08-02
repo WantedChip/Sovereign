@@ -17,23 +17,23 @@ What sets Sovereign apart is its on-device AI pipeline. Using WebGPU acceleratio
 
 ## Tech Stack
 
-| Category | Technology |
-|---|---|
-| **Framework** | React 19 |
-| **Build Tool** | Vite 8 |
-| **Styling** | Tailwind CSS v4 |
-| **Components** | shadcn/ui v4 |
-| **Editor** | Tiptap v3 |
-| **CRDTs** | Yjs |
-| **Database** | Dexie.js v4 (IndexedDB) |
-| **File Storage** | OPFS (Origin Private File System) |
-| **Embeddings** | @huggingface/transformers |
-| **LLM Inference** | @mlc-ai/web-llm |
-| **Search** | Orama |
-| **Knowledge Graph** | Cytoscape.js |
-| **State Management** | Zustand |
-| **Routing** | React Router v7 |
-| **Compression** | fflate |
+| Category             | Technology                        |
+| -------------------- | --------------------------------- |
+| **Framework**        | React 19                          |
+| **Build Tool**       | Vite 8                            |
+| **Styling**          | Tailwind CSS v4                   |
+| **Components**       | shadcn/ui v4                      |
+| **Editor**           | Tiptap v3                         |
+| **CRDTs**            | Yjs                               |
+| **Database**         | Dexie.js v4 (IndexedDB)           |
+| **File Storage**     | OPFS (Origin Private File System) |
+| **Embeddings**       | @huggingface/transformers         |
+| **LLM Inference**    | @mlc-ai/web-llm                   |
+| **Search**           | Orama                             |
+| **Knowledge Graph**  | Cytoscape.js                      |
+| **State Management** | Zustand                           |
+| **Routing**          | React Router v7                   |
+| **Compression**      | fflate                            |
 
 ## License
 

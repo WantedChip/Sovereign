@@ -1,36 +1,36 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #0A0D0C;
-  --color-parchment: #E9E4D4;
-  --color-brass: #C9A227;
-  --color-oxblood: #7A2E2E;
-  --color-slate-line: #3A413C;
-  --color-moss: #5C7A5C;
+  --color-ink: #0a0d0c;
+  --color-parchment: #e9e4d4;
+  --color-brass: #c9a227;
+  --color-oxblood: #7a2e2e;
+  --color-slate-line: #3a413c;
+  --color-moss: #5c7a5c;
 
-  --color-background: #0A0D0C;
-  --color-foreground: #E9E4D4;
-  --color-card: #0F1312;
-  --color-card-foreground: #E9E4D4;
-  --color-popover: #0F1312;
-  --color-popover-foreground: #E9E4D4;
-  --color-primary: #C9A227;
-  --color-primary-foreground: #0A0D0C;
-  --color-secondary: #161B18;
-  --color-secondary-foreground: #C4BEAD;
+  --color-background: #0a0d0c;
+  --color-foreground: #e9e4d4;
+  --color-card: #0f1312;
+  --color-card-foreground: #e9e4d4;
+  --color-popover: #0f1312;
+  --color-popover-foreground: #e9e4d4;
+  --color-primary: #c9a227;
+  --color-primary-foreground: #0a0d0c;
+  --color-secondary: #161b18;
+  --color-secondary-foreground: #c4bead;
   --color-muted: #141816;
-  --color-muted-foreground: #8C948D;
-  --color-accent: #C9A227;
-  --color-accent-foreground: #0A0D0C;
-  --color-destructive: #7A2E2E;
-  --color-destructive-foreground: #E9E4D4;
-  --color-border: #3A413C;
-  --color-input: #3A413C;
-  --color-ring: #C9A227;
+  --color-muted-foreground: #8c948d;
+  --color-accent: #c9a227;
+  --color-accent-foreground: #0a0d0c;
+  --color-destructive: #7a2e2e;
+  --color-destructive-foreground: #e9e4d4;
+  --color-border: #3a413c;
+  --color-input: #3a413c;
+  --color-ring: #c9a227;
 
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-serif: 'Fraunces', Georgia, serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --radius-lg: 0.25rem;
   --radius-md: 0.125rem;
@@ -49,44 +49,51 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-  h1, h2, .font-serif-display {
+  h1,
+  h2,
+  .font-serif-display {
     font-family: var(--font-serif);
     font-optical-sizing: auto;
     color: var(--color-parchment);
   }
-  code, pre, .font-mono-data {
+  code,
+  pre,
+  .font-mono-data {
     font-family: var(--font-mono);
   }
 }
 
 /* Field Survey Utilities — Hairline Rules & Surfaces */
 .survey-card {
-  background: #0F1312;
-  border: 1px solid #3A413C;
+  background: #0f1312;
+  border: 1px solid #3a413c;
   border-radius: 2px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
   position: relative;
 }
 
 .survey-card:hover {
-  border-color: #C9A227;
+  border-color: #c9a227;
   box-shadow: 0 0 25px -5px rgba(201, 162, 39, 0.12);
   transform: translateY(-1px);
 }
 
 .survey-panel {
-  background: #0C100E;
-  border-bottom: 1px solid #3A413C;
+  background: #0c100e;
+  border-bottom: 1px solid #3a413c;
 }
 
 .survey-border-hairline {
-  border: 1px solid #3A413C;
+  border: 1px solid #3a413c;
 }
 
 .survey-coord {
   font-family: var(--font-mono);
   font-size: 10px;
-  color: #C9A227;
+  color: #c9a227;
   letter-spacing: 0.08em;
   font-weight: 600;
   text-transform: uppercase;
@@ -102,22 +109,32 @@
 
 /* Topographic Contour Lines Background */
 .bg-topo-pattern {
-  background-color: #0A0D0C;
-  background-image: radial-gradient(#3A413C 0.75px, transparent 0.75px), radial-gradient(#3A413C 0.75px, #0A0D0C 0.75px);
+  background-color: #0a0d0c;
+  background-image:
+    radial-gradient(#3a413c 0.75px, transparent 0.75px),
+    radial-gradient(#3a413c 0.75px, #0a0d0c 0.75px);
   background-size: 30px 30px;
-  background-position: 0 0, 15px 15px;
+  background-position:
+    0 0,
+    15px 15px;
 }
 
 /* Topographic Contour Line Animation */
 @keyframes topo-drift {
   0% {
-    background-position: 0 0, 15px 15px;
+    background-position:
+      0 0,
+      15px 15px;
   }
   50% {
-    background-position: 15px 15px, 30px 30px;
+    background-position:
+      15px 15px,
+      30px 30px;
   }
   100% {
-    background-position: 0 0, 15px 15px;
+    background-position:
+      0 0,
+      15px 15px;
   }
 }
 

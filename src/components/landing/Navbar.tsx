@@ -27,22 +27,13 @@ export function Navbar() {
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-8 text-xs font-mono tracking-wider uppercase text-muted-foreground">
-          <a
-            href="#features"
-            className="hover:text-brass transition-colors duration-150"
-          >
+          <a href="#features" className="hover:text-brass transition-colors duration-150">
             Capabilities
           </a>
-          <a
-            href="#architecture"
-            className="hover:text-brass transition-colors duration-150"
-          >
+          <a href="#architecture" className="hover:text-brass transition-colors duration-150">
             Transect Map
           </a>
-          <a
-            href="#privacy"
-            className="hover:text-brass transition-colors duration-150"
-          >
+          <a href="#privacy" className="hover:text-brass transition-colors duration-150">
             Governance
           </a>
         </nav>
@@ -67,11 +58,7 @@ export function Navbar() {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle navigation menu"
         >
-          {mobileMenuOpen ? (
-            <X className="w-5 h-5" />
-          ) : (
-            <Menu className="w-5 h-5" />
-          )}
+          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 

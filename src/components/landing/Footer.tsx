@@ -3,7 +3,10 @@ import { Badge } from "@/components/ui/badge"
 
 export function Footer() {
   return (
-    <footer id="privacy" className="relative bg-ink border-t border-slate-line text-parchment pt-16 pb-12">
+    <footer
+      id="privacy"
+      className="relative bg-ink border-t border-slate-line text-parchment pt-16 pb-12"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Top Footer Section */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12">
@@ -19,11 +22,15 @@ export function Footer() {
             </div>
 
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-sm font-sans">
-              The self-governed, offline-first knowledge workspace. Operates entirely inside your web browser sandbox with zero cloud dependencies.
+              The self-governed, offline-first knowledge workspace. Operates entirely inside your
+              web browser sandbox with zero cloud dependencies.
             </p>
 
             <div className="pt-2">
-              <Badge variant="default" className="gap-1.5 px-3 py-1 text-[10px] font-mono border-moss/50 text-moss bg-moss/10">
+              <Badge
+                variant="default"
+                className="gap-1.5 px-3 py-1 text-[10px] font-mono border-moss/50 text-moss bg-moss/10"
+              >
                 <Lock className="w-3.5 h-3.5" />
                 <span>100% CLIENT-SIDE • ZERO TELEMETRY</span>
               </Badge>
@@ -34,9 +41,7 @@ export function Footer() {
           <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-6 text-xs font-mono">
             {/* Column 1 */}
             <div className="space-y-3">
-              <h4 className="font-semibold text-brass tracking-wider uppercase">
-                Navigation
-              </h4>
+              <h4 className="font-semibold text-brass tracking-wider uppercase">Navigation</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
                   <a href="#features" className="hover:text-parchment transition-colors">
@@ -58,9 +63,7 @@ export function Footer() {
 
             {/* Column 2 */}
             <div className="space-y-3">
-              <h4 className="font-semibold text-brass tracking-wider uppercase">
-                Tech Stack
-              </h4>
+              <h4 className="font-semibold text-brass tracking-wider uppercase">Tech Stack</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>Tiptap v3 & Yjs</li>
                 <li>WebGPU & WebLLM</li>
@@ -71,9 +74,7 @@ export function Footer() {
 
             {/* Column 3 */}
             <div className="space-y-3 col-span-2 sm:col-span-1">
-              <h4 className="font-semibold text-brass tracking-wider uppercase">
-                Governance
-              </h4>
+              <h4 className="font-semibold text-brass tracking-wider uppercase">Governance</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
                   <a
@@ -104,9 +105,7 @@ export function Footer() {
 
         {/* Bottom Line */}
         <div className="pt-8 border-t border-slate-line/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-muted-foreground">
-          <p>
-            © 2026 Sovereign. Released under GNU Affero General Public License v3.0 (AGPL-3.0).
-          </p>
+          <p>© 2026 Sovereign. Released under GNU Affero General Public License v3.0 (AGPL-3.0).</p>
           <div className="flex items-center gap-1 text-brass">
             <span>SURVEY INSTRUMENT SYSTEM</span>
           </div>
