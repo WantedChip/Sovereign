@@ -1,44 +1,49 @@
 import { useState } from "react"
 import { useNavigate } from "react-router"
 import { Button } from "@/components/ui/button"
-import { Shield, Menu, X, ArrowRight } from "lucide-react"
+import { Compass, Menu, X, ArrowUpRight } from "lucide-react"
 
 export function Navbar() {
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 w-full glass-panel">
+    <header className="sticky top-0 z-50 w-full bg-ink/95 border-b border-slate-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand Logo */}
-        <a href="#" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center transition-all duration-300 group-hover:border-primary/60 group-hover:bg-primary/25 glow-purple">
-            <Shield className="w-5 h-5 text-primary transition-transform duration-300 group-hover:scale-110" />
+        {/* Brand Logo & Surveyor Seal */}
+        <a href="#" className="flex items-center gap-3 group">
+          <div className="w-8 h-8 rounded-sm bg-brass/10 border border-brass/40 flex items-center justify-center transition-colors group-hover:border-brass group-hover:bg-brass/20">
+            <Compass className="w-4 h-4 text-brass transition-transform duration-500 group-hover:rotate-45" />
           </div>
-          <span className="text-xl font-bold tracking-tight gradient-text-silver font-sans">
-            Sovereign
-          </span>
+          <div className="flex flex-col">
+            <span className="text-lg font-serif font-bold tracking-tight text-parchment leading-none">
+              SOVEREIGN
+            </span>
+            <span className="text-[9px] font-mono text-brass tracking-widest uppercase">
+              Field Survey System
+            </span>
+          </div>
         </a>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+        <nav className="hidden md:flex items-center gap-8 text-xs font-mono tracking-wider uppercase text-muted-foreground">
           <a
             href="#features"
-            className="hover:text-foreground transition-colors duration-200"
+            className="hover:text-brass transition-colors duration-150"
           >
-            Features
+            Capabilities
           </a>
           <a
             href="#architecture"
-            className="hover:text-foreground transition-colors duration-200"
+            className="hover:text-brass transition-colors duration-150"
           >
-            Architecture
+            Transect Map
           </a>
           <a
             href="#privacy"
-            className="hover:text-foreground transition-colors duration-200"
+            className="hover:text-brass transition-colors duration-150"
           >
-            Privacy
+            Governance
           </a>
         </nav>
 
@@ -46,64 +51,65 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-4">
           <Button
             variant="default"
-            className="gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 font-medium"
+            size="sm"
+            className="gap-2 font-mono text-xs tracking-wider"
             onClick={() => navigate("/app")}
           >
             Launch Workspace
-            <ArrowRight className="w-4 h-4" />
+            <ArrowUpRight className="w-3.5 h-3.5" />
           </Button>
         </div>
 
         {/* Mobile Menu Button */}
         <button
           type="button"
-          className="md:hidden p-2 text-muted-foreground hover:text-foreground focus:outline-none"
+          className="md:hidden p-2 text-muted-foreground hover:text-parchment focus:outline-none"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle navigation menu"
         >
           {mobileMenuOpen ? (
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           ) : (
-            <Menu className="w-6 h-6" />
+            <Menu className="w-5 h-5" />
           )}
         </button>
       </div>
 
       {/* Mobile Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden glass border-t border-border/40 px-4 pt-4 pb-6 space-y-3 animate-in fade-in slide-in-from-top-2">
+        <div className="md:hidden bg-ink border-t border-slate-line px-4 pt-4 pb-6 space-y-3 font-mono text-xs uppercase tracking-wider">
           <a
             href="#features"
-            className="block py-2 text-base font-medium text-muted-foreground hover:text-foreground"
+            className="block py-2 text-muted-foreground hover:text-brass"
             onClick={() => setMobileMenuOpen(false)}
           >
-            Features
+            Capabilities
           </a>
           <a
             href="#architecture"
-            className="block py-2 text-base font-medium text-muted-foreground hover:text-foreground"
+            className="block py-2 text-muted-foreground hover:text-brass"
             onClick={() => setMobileMenuOpen(false)}
           >
-            Architecture
+            Transect Map
           </a>
           <a
             href="#privacy"
-            className="block py-2 text-base font-medium text-muted-foreground hover:text-foreground"
+            className="block py-2 text-muted-foreground hover:text-brass"
             onClick={() => setMobileMenuOpen(false)}
           >
-            Privacy
+            Governance
           </a>
           <div className="pt-2">
             <Button
               variant="default"
-              className="w-full gap-2 shadow-lg shadow-primary/25"
+              className="w-full gap-2 text-xs"
               onClick={() => {
                 setMobileMenuOpen(false)
                 navigate("/app")
               }}
             >
               Launch Workspace
-              <ArrowRight className="w-4 h-4" />
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </Button>
           </div>
         </div>
