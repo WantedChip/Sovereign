@@ -1,5 +1,6 @@
-import { LandingPage } from "@/pages/LandingPage"
+import { RouterProvider } from "react-router"
+import { router } from "@/router"
 
 export default function App() {
-  return <LandingPage />
+  return <RouterProvider router={router} />
 }

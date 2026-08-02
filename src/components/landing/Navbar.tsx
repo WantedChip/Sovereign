@@ -1,8 +1,10 @@
 import { useState } from "react"
+import { useNavigate } from "react-router"
 import { Button } from "@/components/ui/button"
 import { Shield, Menu, X, ArrowRight } from "lucide-react"
 
 export function Navbar() {
+  const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -45,9 +47,7 @@ export function Navbar() {
           <Button
             variant="default"
             className="gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 font-medium"
-            onClick={() => {
-              window.location.href = "#app"
-            }}
+            onClick={() => navigate("/app")}
           >
             Launch Workspace
             <ArrowRight className="w-4 h-4" />
@@ -99,7 +99,7 @@ export function Navbar() {
               className="w-full gap-2 shadow-lg shadow-primary/25"
               onClick={() => {
                 setMobileMenuOpen(false)
-                window.location.href = "#app"
+                navigate("/app")
               }}
             >
               Launch Workspace

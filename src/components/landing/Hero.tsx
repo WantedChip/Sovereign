@@ -1,8 +1,11 @@
+import { useNavigate } from "react-router"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Sparkles, ArrowRight, Play, ChevronDown, Lock, Cpu, HardDrive } from "lucide-react"
 
 export function Hero() {
+  const navigate = useNavigate()
+
   return (
     <section className="relative min-h-[calc(100vh-4rem)] flex flex-col justify-between items-center bg-grid-pattern px-4 sm:px-6 lg:px-8 py-16 md:py-24 overflow-hidden">
       {/* Animated Gradient Mesh Blobs Background */}
@@ -43,9 +46,7 @@ export function Hero() {
           <Button
             size="lg"
             className="w-full sm:w-auto h-12 px-8 text-base font-semibold gap-2.5 shadow-xl shadow-primary/25 hover:shadow-primary/40 hover:scale-[1.02] transition-all duration-300"
-            onClick={() => {
-              window.location.href = "#app"
-            }}
+            onClick={() => navigate("/app")}
           >
             Launch Workspace
             <ArrowRight className="w-5 h-5" />
