@@ -1,5 +1,6 @@
 import { Extension, type Editor, type Range } from "@tiptap/core"
 import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion"
+import { PluginKey } from "@tiptap/pm/state"
 import { ReactRenderer } from "@tiptap/react"
 import tippy, { type Instance as TippyInstance, type GetReferenceClientRect } from "tippy.js"
 import {
@@ -212,6 +213,7 @@ export const SlashCommand = Extension.create({
     return {
       suggestion: {
         char: "/",
+        pluginKey: new PluginKey("slashCommand"),
         command: ({
           editor,
           range,
@@ -231,6 +233,7 @@ export const SlashCommand = Extension.create({
     return [
       Suggestion({
         editor: this.editor,
+        pluginKey: new PluginKey("slashCommand"),
         ...this.options.suggestion,
         items: ({ query }: { query: string }) => {
           return defaultSlashCommands.filter(

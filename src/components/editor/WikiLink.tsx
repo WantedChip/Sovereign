@@ -1,5 +1,6 @@
 import { Node, mergeAttributes, InputRule, type Editor, type Range } from "@tiptap/core"
 import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion"
+import { PluginKey } from "@tiptap/pm/state"
 import { ReactRenderer } from "@tiptap/react"
 import tippy, { type Instance as TippyInstance, type GetReferenceClientRect } from "tippy.js"
 import { listDocuments } from "@/lib/db/operations"
@@ -96,6 +97,7 @@ export const WikiLinkNode = Node.create<WikiLinkOptions>({
     return {
       suggestion: {
         char: "[[",
+        pluginKey: new PluginKey("wikiLink"),
         allowSpaces: true,
         command: ({
           editor,
@@ -133,6 +135,7 @@ export const WikiLinkNode = Node.create<WikiLinkOptions>({
     return [
       Suggestion({
         editor: this.editor,
+        pluginKey: new PluginKey("wikiLink"),
         ...this.options.suggestion,
         items: async ({ query }: { query: string }) => {
           const dbDocs = await listDocuments().catch(() => [])
