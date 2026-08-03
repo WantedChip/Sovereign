@@ -148,7 +148,7 @@ export function WorkspaceLayout() {
 
           {/* Main Editor Canvas Container */}
           <div className="flex-1 p-4 md:p-6 overflow-hidden flex flex-col">
-            <Editor content='<h1>Welcome to Sovereign</h1><p>Sovereign is a local-first, privacy-focused personal knowledge management system built with <strong>Tiptap v3</strong>, <strong>Yjs CRDTs</strong>, and <strong>WebLLM</strong>.</p><blockquote>All documents are stored locally on your device in OPFS and IndexedDB. Zero cloud telemetry.</blockquote><p>Explore linked documents such as <span data-type="wiki-link" data-title="Field Survey Specification">[[Field Survey Specification]]</span> and <span data-type="wiki-link" data-title="Local AI & WebGPU Roadmap">[[Local AI & WebGPU Roadmap]]</span>. Type <code>/</code> for slash commands or <code>[[</code> to connect notes.</p>' />
+            <Editor content='<h1>Welcome to Sovereign</h1><p>Sovereign is a local-first, privacy-focused personal knowledge management system built with <strong>Tiptap v3</strong>, <strong>Yjs CRDTs</strong>, and <strong>WebLLM</strong>.</p><div data-type="callout" data-callout-type="info"><p>All documents are stored locally on your device in OPFS and IndexedDB. Zero cloud telemetry.</p></div><p>Explore linked documents such as <span data-type="wiki-link" data-title="Field Survey Specification">[[Field Survey Specification]]</span> and <span data-type="wiki-link" data-title="Local AI & WebGPU Roadmap">[[Local AI & WebGPU Roadmap]]</span>.</p><details data-type="collapsible-block" open><summary>Architecture Briefing</summary><div class="collapsible-content"><p>Type <code>/</code> to insert callouts, toggle sections, code blocks, or lists.</p></div></details>' />
           </div>
         </main>
 

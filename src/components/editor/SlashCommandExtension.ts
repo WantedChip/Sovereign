@@ -11,6 +11,11 @@ import {
   Quote,
   SquareCode,
   Minus,
+  ChevronDown,
+  Info,
+  AlertTriangle,
+  Lightbulb,
+  AlertOctagon,
 } from "lucide-react"
 import { SlashMenu, type SlashMenuRef, type SlashCommandItem } from "./SlashMenu"
 
@@ -53,6 +58,125 @@ export const defaultSlashCommands: SlashCommandItem[] = [
     icon: ListOrdered,
     command: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleOrderedList().run()
+    },
+  },
+  {
+    title: "Collapsible Section",
+    description: "Create a toggleable section with summary header",
+    icon: ChevronDown,
+    command: ({ editor, range }) => {
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .insertContent({
+          type: "collapsibleBlock",
+          attrs: { title: "Toggle Section", isOpen: true },
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "Collapsible content block..." }],
+            },
+          ],
+        })
+        .run()
+    },
+  },
+  {
+    title: "Info Callout",
+    description: "Highlight information with a brass callout box",
+    icon: Info,
+    command: ({ editor, range }) => {
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .insertContent({
+          type: "calloutBlock",
+          attrs: { type: "info" },
+          content: [
+            {
+              type: "paragraph",
+              content: [{ type: "text", text: "Important note or reference info." }],
+            },
+          ],
+        })
+        .run()
+    },
+  },
+  {
+    title: "Warning Callout",
+    description: "Highlight cautions or warnings",
+    icon: AlertTriangle,
+    command: ({ editor, range }) => {
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .insertContent({
+          type: "calloutBlock",
+          attrs: { type: "warning" },
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                { type: "text", text: "Warning: Verify hardware settings before proceeding." },
+              ],
+            },
+          ],
+        })
+        .run()
+    },
+  },
+  {
+    title: "Tip Callout",
+    description: "Highlight helpful tips or best practices",
+    icon: Lightbulb,
+    command: ({ editor, range }) => {
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .insertContent({
+          type: "calloutBlock",
+          attrs: { type: "tip" },
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                { type: "text", text: "Tip: Use keyboard shortcuts for rapid field entry." },
+              ],
+            },
+          ],
+        })
+        .run()
+    },
+  },
+  {
+    title: "Danger Callout",
+    description: "Highlight critical errors or dangerous actions",
+    icon: AlertOctagon,
+    command: ({ editor, range }) => {
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .insertContent({
+          type: "calloutBlock",
+          attrs: { type: "danger" },
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "Danger: Unsaved local data will be permanently overwritten.",
+                },
+              ],
+            },
+          ],
+        })
+        .run()
     },
   },
   {

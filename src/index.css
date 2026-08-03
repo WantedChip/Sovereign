@@ -271,3 +271,70 @@
   border-top: 1px solid var(--color-slate-line);
   margin: 1.5rem 0;
 }
+
+/* Collapsible Section Details & Summary Styling */
+.ProseMirror details.collapsible-block {
+  border: 1px solid var(--color-slate-line);
+  border-radius: 2px;
+  background-color: rgba(22, 27, 24, 0.4);
+  margin: 1rem 0;
+  transition: all 0.2s ease-in-out;
+}
+
+.ProseMirror details.collapsible-block summary {
+  padding: 0.6rem 0.8rem;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-parchment);
+  background-color: rgba(22, 27, 24, 0.8);
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid transparent;
+  transition: background-color 0.15s ease;
+}
+
+.ProseMirror details.collapsible-block[open] summary {
+  border-bottom-color: var(--color-slate-line);
+}
+
+.ProseMirror details.collapsible-block summary:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-brass);
+}
+
+.ProseMirror details.collapsible-block .collapsible-content {
+  padding: 0.8rem 1rem;
+}
+
+/* Callout Block Admonition Styling */
+.ProseMirror div.callout {
+  margin: 1rem 0;
+  padding: 0.85rem 1.1rem;
+  border-radius: 2px;
+  border-left-width: 4px;
+}
+
+.ProseMirror div.callout-info {
+  background-color: rgba(201, 162, 39, 0.08);
+  border-color: var(--color-brass);
+  color: var(--color-parchment);
+}
+
+.ProseMirror div.callout-warning {
+  background-color: rgba(217, 119, 6, 0.1);
+  border-color: #d97706;
+  color: var(--color-parchment);
+}
+
+.ProseMirror div.callout-tip {
+  background-color: rgba(92, 122, 92, 0.15);
+  border-color: var(--color-moss);
+  color: var(--color-parchment);
+}
+
+.ProseMirror div.callout-danger {
+  background-color: rgba(122, 46, 46, 0.15);
+  border-color: var(--color-oxblood);
+  color: var(--color-parchment);
+}

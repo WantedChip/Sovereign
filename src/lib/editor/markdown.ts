@@ -46,6 +46,42 @@ turndownService.addRule("wikiLink", {
   },
 })
 
+// Custom Rule for Callout Blocks (div[data-type="callout"])
+turndownService.addRule("calloutBlock", {
+  filter: (node) => {
+    return node.nodeName === "DIV" && (node as HTMLElement).getAttribute("data-type") === "callout"
+  },
+  replacement: (content, node) => {
+    const type = (node as HTMLElement).getAttribute("data-callout-type") || "info"
+    const prefixMap: Record<string, string> = {
+      info: "[!NOTE]",
+      warning: "[!WARNING]",
+      tip: "[!TIP]",
+      danger: "[!CAUTION]",
+    }
+    const alertTag = prefixMap[type] || "[!NOTE]"
+    const cleanContent = content.trim().replace(/\n/g, "\n> ")
+    return `\n> ${alertTag}\n> ${cleanContent}\n\n`
+  },
+})
+
+// Custom Rule for Collapsible Blocks (details[data-type="collapsible-block"])
+turndownService.addRule("collapsibleBlock", {
+  filter: (node) => {
+    return (
+      node.nodeName === "DETAILS" &&
+      (node as HTMLElement).getAttribute("data-type") === "collapsible-block"
+    )
+  },
+  replacement: (_content, node) => {
+    const el = node as HTMLElement
+    const summary = el.querySelector("summary")?.textContent || "Toggle Section"
+    const content = el.querySelector(".collapsible-content")?.innerHTML || ""
+    const innerMd = turndownService.turndown(content)
+    return `\n<details data-type="collapsible-block"><summary>${summary}</summary>\n\n${innerMd}\n\n</details>\n\n`
+  },
+})
+
 // Initialize markdown-it parser
 export const mdParser = markdownit({
   html: true,
@@ -63,14 +99,33 @@ export function toMarkdown(editor: Editor | null): string {
 }
 
 /**
- * Parses a Markdown string into HTML suitable for loading into Tiptap, converting [[Wiki Links]] to span nodes.
+ * Parses a Markdown string into HTML suitable for loading into Tiptap, converting [[Wiki Links]] and callouts to HTML nodes.
  */
 export function markdownToHtml(markdown: string): string {
   if (!markdown) return ""
-  const processed = markdown.replace(/\[\[([^\]]+)\]\]/g, (_match, title) => {
+  let processed = markdown.replace(/\[\[([^\]]+)\]\]/g, (_match, title) => {
     const cleanTitle = title.trim()
     return `<span data-type="wiki-link" data-title="${cleanTitle}">[[${cleanTitle}]]</span>`
   })
+
+  // Convert GFM alerts (> [!NOTE], etc.) to callout divs
+  processed = processed.replace(
+    />\s*\[!(NOTE|INFO|WARNING|TIP|CAUTION|DANGER)\]\n((?:>[^\n]*\n?)*)/gi,
+    (_match, tag, body) => {
+      const typeMap: Record<string, string> = {
+        NOTE: "info",
+        INFO: "info",
+        WARNING: "warning",
+        TIP: "tip",
+        CAUTION: "danger",
+        DANGER: "danger",
+      }
+      const calloutType = typeMap[tag.toUpperCase()] || "info"
+      const cleanBody = body.replace(/^>\s?/gm, "").trim()
+      return `<div data-type="callout" data-callout-type="${calloutType}"><p>${cleanBody}</p></div>`
+    }
+  )
+
   return mdParser.render(processed)
 }
 

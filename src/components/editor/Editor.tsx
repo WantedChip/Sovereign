@@ -4,6 +4,8 @@ import { Placeholder } from "@tiptap/extensions"
 import { Toolbar } from "./Toolbar"
 import { SlashCommand } from "./SlashCommandExtension"
 import { WikiLinkNode } from "./WikiLink"
+import { CollapsibleBlockNode } from "./CollapsibleBlock"
+import { CalloutBlockNode } from "./CalloutBlock"
 
 interface EditorProps {
   content?: string
@@ -32,6 +34,8 @@ export function Editor({
       }),
       SlashCommand,
       WikiLinkNode,
+      CollapsibleBlockNode,
+      CalloutBlockNode,
     ],
     onUpdate: ({ editor }) => {
       onChange?.(editor.getHTML())
