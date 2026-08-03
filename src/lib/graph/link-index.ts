@@ -1,6 +1,80 @@
 import type { JSONContent } from "@tiptap/react"
 import { db } from "@/lib/db/schema"
-import type { LinkEntry } from "@/types"
+import { getDocument, extractTextFromJSON } from "@/lib/db/operations"
+import type { BacklinkWithContext, LinkEntry } from "@/types"
+
+/**
+ * Extracts a concise text snippet surrounding a target wiki-link from document content.
+ */
+export function extractContextSnippet(
+  content: JSONContent | string | null | undefined,
+  targetTitle: string
+): string {
+  if (!content) return "Mentioned in document"
+
+  const normalizedTarget = targetTitle.toLowerCase().trim()
+
+  if (typeof content === "string") {
+    const lines = content.split("\n")
+    for (const line of lines) {
+      if (
+        line.toLowerCase().includes(`[[${normalizedTarget}]]`) ||
+        line.toLowerCase().includes(normalizedTarget)
+      ) {
+        const clean = line.replace(/#+\s*/, "").trim()
+        return clean.length > 140 ? clean.slice(0, 140) + "..." : clean
+      }
+    }
+    return content.length > 140 ? content.slice(0, 140) + "..." : content
+  }
+
+  // Tiptap JSONContent traversal for matching paragraph/block node
+  let matchingSnippet = ""
+
+  const walkBlocks = (node: unknown) => {
+    if (matchingSnippet || !node || typeof node !== "object") return
+
+    const jsonNode = node as {
+      type?: string
+      attrs?: Record<string, unknown>
+      content?: unknown[]
+      text?: string
+    }
+
+    const nodeText = extractTextFromJSON(jsonNode).trim()
+    const hasWikiLinkNode =
+      Array.isArray(jsonNode.content) &&
+      jsonNode.content.some((child) => {
+        const c = child as { type?: string; attrs?: Record<string, unknown> }
+        return (
+          c.type === "wikiLink" &&
+          typeof c.attrs?.title === "string" &&
+          c.attrs.title.toLowerCase().trim() === normalizedTarget
+        )
+      })
+
+    if (
+      hasWikiLinkNode ||
+      nodeText.toLowerCase().includes(normalizedTarget) ||
+      nodeText.includes(`[[${targetTitle}]]`)
+    ) {
+      if (nodeText.length > 0) {
+        matchingSnippet = nodeText.length > 140 ? nodeText.slice(0, 140) + "..." : nodeText
+        return
+      }
+    }
+
+    if (Array.isArray(jsonNode.content)) {
+      for (const child of jsonNode.content) {
+        walkBlocks(child)
+      }
+    }
+  }
+
+  walkBlocks(content)
+
+  return matchingSnippet || "Mentioned in document"
+}
 
 /**
  * Extracts raw wiki-link entries from Tiptap JSON content or Markdown/plain string content.
@@ -155,6 +229,39 @@ export async function getBacklinks(documentId: string, title?: string): Promise<
         (Boolean(normalizedTitle) && link.targetTitle.toLowerCase().trim() === normalizedTitle)
     )
     .toArray()
+}
+
+/**
+ * Returns all backlinks pointing TO the given document along with context snippets and source document titles.
+ */
+export async function getBacklinksWithContext(
+  documentId: string,
+  title?: string
+): Promise<BacklinkWithContext[]> {
+  const rawBacklinks = await getBacklinks(documentId, title)
+  if (rawBacklinks.length === 0) return []
+
+  const result: BacklinkWithContext[] = []
+
+  for (const link of rawBacklinks) {
+    // Avoid self-referencing backlinks if a document links to itself
+    if (link.sourceId === documentId) continue
+
+    const sourceDoc = await getDocument(link.sourceId)
+    const sourceTitle = sourceDoc?.title ?? "Untitled Document"
+    const snippet = extractContextSnippet(sourceDoc?.content, link.targetTitle)
+
+    result.push({
+      id: link.id,
+      sourceId: link.sourceId,
+      sourceTitle,
+      targetTitle: link.targetTitle,
+      targetId: link.targetId,
+      snippet,
+    })
+  }
+
+  return result
 }
 
 /**

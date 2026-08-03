@@ -65,6 +65,11 @@ export async function createDocument(
   }
 }
 
+export async function createFromLink(targetTitle: string): Promise<Document> {
+  const title = targetTitle.trim() || "Untitled Note"
+  return await createDocument(title)
+}
+
 export async function getDocument(id: string): Promise<Document | null> {
   const meta = await db.documents.get(id)
   if (!meta) return null

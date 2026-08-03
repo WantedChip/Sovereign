@@ -29,3 +29,12 @@ export interface LinkEntry {
   targetTitle: string
   targetId: string | null
 }
+
+export interface BacklinkWithContext {
+  id?: number
+  sourceId: string
+  sourceTitle: string
+  targetTitle: string
+  targetId: string | null
+  snippet: string
+}

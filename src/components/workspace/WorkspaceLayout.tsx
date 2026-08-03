@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Editor } from "@/components/editor/Editor"
+import { BacklinkPanel } from "@/components/editor/BacklinkPanel"
 import { Sidebar } from "./Sidebar"
 import { useDocumentStore } from "@/stores/document-store"
 import { useUIStore } from "@/stores/ui-store"
@@ -12,6 +13,7 @@ import { useDocument } from "@/hooks/useDocument"
 import { createDocument, listDocuments } from "@/lib/db/operations"
 import { PresenceAvatars } from "@/components/collaboration/PresenceAvatars"
 import { ConnectionStatus } from "@/components/collaboration/ConnectionStatus"
+
 import {
   Compass,
   FileText,
@@ -254,24 +256,33 @@ export function WorkspaceLayout() {
           </div>
 
           {/* Main Editor Canvas Container */}
-          <div className="flex-1 p-4 md:p-6 overflow-hidden flex flex-col">
+
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col space-y-6">
             {isDocLoading ? (
-              <div className="flex-1 flex items-center justify-center font-mono text-xs text-muted-foreground gap-2">
+              <div className="flex-1 flex items-center justify-center font-mono text-xs text-muted-foreground gap-2 min-h-[300px]">
                 <Loader2 className="w-4 h-4 animate-spin text-brass" />
                 <span>Loading note content & syncing IndexedDB persistence...</span>
               </div>
             ) : activeDoc && yjsSession ? (
-              <Editor
-                key={activeDoc.id}
-                ydoc={yjsSession.ydoc}
-                xmlFragment={yjsSession.xmlFragment}
-                provider={yjsSession.webrtcProvider}
-                user={{ name: username, color: userColor }}
-                content={activeDoc.content}
-                onUpdateJSON={(json) => saveContent(json)}
-              />
+              <div className="flex-1 flex flex-col space-y-6">
+                <Editor
+                  key={activeDoc.id}
+                  ydoc={yjsSession.ydoc}
+                  xmlFragment={yjsSession.xmlFragment}
+                  provider={yjsSession.webrtcProvider}
+                  user={{ name: username, color: userColor }}
+                  content={activeDoc.content}
+                  onUpdateJSON={(json) => saveContent(json)}
+                />
+
+                <BacklinkPanel
+                  documentId={activeDoc.id}
+                  documentTitle={activeDoc.title}
+                  onNavigate={setActiveDocumentId}
+                />
+              </div>
             ) : (
-              <div className="flex-1 flex items-center justify-center font-mono text-xs text-muted-foreground">
+              <div className="flex-1 flex items-center justify-center font-mono text-xs text-muted-foreground min-h-[300px]">
                 Select or create a document to begin writing.
               </div>
             )}
@@ -323,10 +334,17 @@ export function WorkspaceLayout() {
                       Cytoscape.js Chart
                     </div>
                     <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      Interactive bidirectional graph visualization connecting notes via
-                      [[wikilinks]] arrives in sub-phase v0.5.
+                      Interactive 2D knowledge graph visualization arrives in sub-phase v0.5.2.
                     </p>
                   </div>
+
+                  {activeDoc && (
+                    <BacklinkPanel
+                      documentId={activeDoc.id}
+                      documentTitle={activeDoc.title}
+                      onNavigate={setActiveDocumentId}
+                    />
+                  )}
                 </div>
               ) : (
                 <div className="space-y-4">
