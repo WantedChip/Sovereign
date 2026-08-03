@@ -22,3 +22,10 @@ export interface Setting {
   key: string
   value: unknown
 }
+
+export interface LinkEntry {
+  id?: number
+  sourceId: string
+  targetTitle: string
+  targetId: string | null
+}

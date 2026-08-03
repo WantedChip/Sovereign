@@ -2,6 +2,7 @@ import { Node, mergeAttributes, InputRule, type Editor, type Range } from "@tipt
 import Suggestion, { type SuggestionOptions } from "@tiptap/suggestion"
 import { ReactRenderer } from "@tiptap/react"
 import tippy, { type Instance as TippyInstance, type GetReferenceClientRect } from "tippy.js"
+import { listDocuments } from "@/lib/db/operations"
 import { WikiLinkMenu, type WikiLinkMenuRef, type WikiLinkItem } from "./WikiLinkMenu"
 
 export const mockDocuments: WikiLinkItem[] = [
@@ -133,11 +134,23 @@ export const WikiLinkNode = Node.create<WikiLinkOptions>({
       Suggestion({
         editor: this.editor,
         ...this.options.suggestion,
-        items: ({ query }: { query: string }) => {
-          return mockDocuments.filter((doc) =>
-            doc.title.toLowerCase().includes(query.toLowerCase())
+        items: async ({ query }: { query: string }) => {
+          const dbDocs = await listDocuments().catch(() => [])
+          const dbItems: WikiLinkItem[] = dbDocs.map((doc) => ({
+            title: doc.title,
+            id: doc.id,
+          }))
+
+          const existingTitles = new Set(dbItems.map((i) => i.title.toLowerCase()))
+          const fallbacks = mockDocuments.filter(
+            (item) => !existingTitles.has(item.title.toLowerCase())
           )
+
+          const allItems = [...dbItems, ...fallbacks]
+          const lowerQuery = query.toLowerCase()
+          return allItems.filter((doc) => doc.title.toLowerCase().includes(lowerQuery))
         },
+
         render: () => {
           let component: ReactRenderer<WikiLinkMenuRef> | null = null
           let popup: TippyInstance[] | null = null

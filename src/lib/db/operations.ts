@@ -1,6 +1,11 @@
 import type { JSONContent } from "@tiptap/react"
 import { db } from "./schema"
 import { opfsClient } from "@/lib/storage/opfs-client"
+import {
+  updateDocumentLinks,
+  resolveLinksForDocument,
+  removeDocumentLinks,
+} from "@/lib/graph/link-index"
 import type { Document, DocumentMeta } from "@/types"
 
 export function extractTextFromJSON(node: unknown): string {
@@ -51,6 +56,9 @@ export async function createDocument(
   await db.documents.put(docRecord)
   await opfsClient.writeDocumentContent(id, docContent)
 
+  await updateDocumentLinks(id, docContent)
+  await resolveLinksForDocument(id, docTitle)
+
   return {
     ...docRecord,
     content: docContent,
@@ -86,8 +94,13 @@ export async function updateDocument(
   if (updates.content !== undefined) {
     updatedMeta.wordCount = calculateWordCount(updates.content)
     await opfsClient.writeDocumentContent(id, updates.content)
+    await updateDocumentLinks(id, updates.content)
   } else if (updates.wordCount !== undefined) {
     updatedMeta.wordCount = updates.wordCount
+  }
+
+  if (updates.title !== undefined) {
+    await resolveLinksForDocument(id, updates.title)
   }
 
   await db.documents.update(id, updatedMeta)
@@ -98,6 +111,7 @@ export async function updateDocument(
 export async function deleteDocument(id: string): Promise<void> {
   await db.documents.delete(id)
   await opfsClient.deleteDocumentContent(id)
+  await removeDocumentLinks(id)
 }
 
 export async function listDocuments(): Promise<DocumentMeta[]> {
