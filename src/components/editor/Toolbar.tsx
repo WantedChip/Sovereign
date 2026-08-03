@@ -1,5 +1,7 @@
+import { useState } from "react"
 import { type Editor } from "@tiptap/react"
 import { Separator } from "@/components/ui/separator"
+import { toMarkdown } from "@/lib/editor/markdown"
 import {
   Bold,
   Italic,
@@ -15,6 +17,8 @@ import {
   Minus,
   Undo,
   Redo,
+  Copy,
+  Check,
 } from "lucide-react"
 
 interface ToolbarProps {
@@ -22,8 +26,21 @@ interface ToolbarProps {
 }
 
 export function Toolbar({ editor }: ToolbarProps) {
+  const [copied, setCopied] = useState(false)
+
   if (!editor) {
     return null
+  }
+
+  const handleCopyMarkdown = async () => {
+    const md = toMarkdown(editor)
+    try {
+      await navigator.clipboard.writeText(md)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Fallback if clipboard API is restricted
+    }
   }
 
   const items = [
@@ -119,36 +136,59 @@ export function Toolbar({ editor }: ToolbarProps) {
   ]
 
   return (
-    <div className="flex flex-wrap items-center gap-1 p-1.5 bg-ink/90 border-b border-slate-line text-xs font-mono select-none sticky top-0 z-10 backdrop-blur-sm">
-      {items.map((item, index) => {
-        if ("type" in item && item.type === "divider") {
-          return (
-            <Separator
-              key={`divider-${index}`}
-              orientation="vertical"
-              className="h-4 mx-1 bg-slate-line"
-            />
-          )
-        }
+    <div className="flex flex-wrap items-center justify-between gap-1 p-1.5 bg-ink/90 border-b border-slate-line text-xs font-mono select-none sticky top-0 z-10 backdrop-blur-sm">
+      <div className="flex flex-wrap items-center gap-1">
+        {items.map((item, index) => {
+          if ("type" in item && item.type === "divider") {
+            return (
+              <Separator
+                key={`divider-${index}`}
+                orientation="vertical"
+                className="h-4 mx-1 bg-slate-line"
+              />
+            )
+          }
 
-        const Icon = item.icon
-        return (
-          <button
-            key={item.label}
-            type="button"
-            onClick={item.action}
-            disabled={item.disabled}
-            title={item.label}
-            className={`h-7 w-7 rounded-sm flex items-center justify-center transition-all duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${
-              item.isActive
-                ? "bg-brass/20 text-brass border border-brass/60 font-bold shadow-inner"
-                : "text-muted-foreground hover:text-parchment hover:bg-secondary/60 border border-transparent"
-            }`}
-          >
-            <Icon className="w-3.5 h-3.5" />
-          </button>
-        )
-      })}
+          const Icon = item.icon
+          return (
+            <button
+              key={item.label}
+              type="button"
+              onClick={item.action}
+              disabled={item.disabled}
+              title={item.label}
+              className={`h-7 w-7 rounded-sm flex items-center justify-center transition-all duration-150 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed ${
+                item.isActive
+                  ? "bg-brass/20 text-brass border border-brass/60 font-bold shadow-inner"
+                  : "text-muted-foreground hover:text-parchment hover:bg-secondary/60 border border-transparent"
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          onClick={handleCopyMarkdown}
+          title="Copy as Markdown"
+          className="h-7 px-2 rounded-sm border border-slate-line bg-secondary/40 text-muted-foreground hover:text-brass hover:border-brass/60 flex items-center gap-1.5 text-[11px] font-mono transition-colors cursor-pointer"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3.5 h-3.5 text-moss" />
+              <span className="text-moss font-semibold">Copied MD</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3.5 h-3.5" />
+              <span>Copy MD</span>
+            </>
+          )}
+        </button>
+      </div>
     </div>
   )
 }
