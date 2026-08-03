@@ -9,6 +9,7 @@ import { useDocumentStore } from "@/stores/document-store"
 import { useUIStore } from "@/stores/ui-store"
 import { useDocument } from "@/hooks/useDocument"
 import { createDocument, listDocuments } from "@/lib/db/operations"
+import { getYjsDoc } from "@/lib/crdt/yjs-provider"
 import {
   Compass,
   FileText,
@@ -245,6 +246,8 @@ export function WorkspaceLayout() {
             ) : activeDoc ? (
               <Editor
                 key={activeDoc.id}
+                ydoc={getYjsDoc(activeDoc.id).ydoc}
+                xmlFragment={getYjsDoc(activeDoc.id).xmlFragment}
                 content={activeDoc.content}
                 onUpdateJSON={(json) => saveContent(json)}
               />
