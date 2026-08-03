@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useUIStore } from "@/stores/ui-store"
 import { Button } from "@/components/ui/button"
 import { DocumentList } from "./DocumentList"
+import { ImportDialog } from "./ImportDialog"
 import {
   Plus,
   Search,
@@ -10,6 +11,7 @@ import {
   Compass,
   HardDrive,
   Download,
+  Upload,
   Loader2,
 } from "lucide-react"
 import { exportKnowledgeBase, downloadExport } from "@/lib/export/zip-export"
@@ -32,6 +34,7 @@ export function Sidebar({
   const { searchQuery, setSearchQuery, setCommandPaletteOpen } = useUIStore()
   const [isExporting, setIsExporting] = useState(false)
   const [exportProgressText, setExportProgressText] = useState("")
+  const [isImportOpen, setIsImportOpen] = useState(false)
 
   const handleExport = async () => {
     if (isExporting) return
@@ -89,6 +92,17 @@ export function Sidebar({
             <Download className="w-4 h-4" />
           )}
         </Button>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8 mt-2 text-muted-foreground hover:text-brass"
+          onClick={() => setIsImportOpen(true)}
+          title="Import Knowledge Base ZIP"
+        >
+          <Upload className="w-4 h-4" />
+        </Button>
+
+        <ImportDialog isOpen={isImportOpen} onClose={() => setIsImportOpen(false)} />
       </div>
     )
   }
@@ -158,7 +172,7 @@ export function Sidebar({
         searchQuery={searchQuery}
       />
 
-      {/* Storage & Export Footer */}
+      {/* Storage & Backup Footer */}
       <div className="p-3 border-t border-slate-line space-y-2 bg-secondary/30 font-mono text-[10px]">
         <div className="flex items-center justify-between text-muted-foreground">
           <span className="flex items-center gap-1.5">
@@ -168,27 +182,37 @@ export function Sidebar({
           <span className="text-moss font-semibold">IndexedDB + OPFS</span>
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleExport}
-          disabled={isExporting}
-          className="w-full h-7 text-[11px] font-mono gap-1.5 border-slate-line hover:border-brass/50 bg-ink/60 hover:bg-brass/10 text-parchment transition-colors"
-          title="Export Knowledge Base as structured Markdown ZIP archive"
-        >
-          {isExporting ? (
-            <>
+        <div className="grid grid-cols-2 gap-1.5">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            disabled={isExporting}
+            className="h-7 text-[10px] font-mono gap-1 border-slate-line hover:border-brass/50 bg-ink/60 hover:bg-brass/10 text-parchment transition-colors px-2"
+            title="Export Knowledge Base as structured Markdown ZIP archive"
+          >
+            {isExporting ? (
               <Loader2 className="w-3 h-3 animate-spin text-brass" />
-              <span>Exporting {exportProgressText}</span>
-            </>
-          ) : (
-            <>
-              <Download className="w-3 h-3 text-brass" />
-              <span>{exportProgressText || "Export Knowledge Base ZIP"}</span>
-            </>
-          )}
-        </Button>
+            ) : (
+              <Download className="w-3 h-3 text-brass shrink-0" />
+            )}
+            <span className="truncate">{exportProgressText || "Export ZIP"}</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsImportOpen(true)}
+            className="h-7 text-[10px] font-mono gap-1 border-slate-line hover:border-brass/50 bg-ink/60 hover:bg-brass/10 text-parchment transition-colors px-2"
+            title="Import Markdown ZIP archive into Knowledge Base"
+          >
+            <Upload className="w-3 h-3 text-brass shrink-0" />
+            <span>Import ZIP</span>
+          </Button>
+        </div>
       </div>
+
+      <ImportDialog isOpen={isImportOpen} onClose={() => setIsImportOpen(false)} />
     </aside>
   )
 }

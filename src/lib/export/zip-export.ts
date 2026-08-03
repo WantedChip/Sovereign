@@ -141,7 +141,6 @@ export async function exportKnowledgeBase(onProgress?: ExportProgressCallback): 
     })
   }
 
-
   // 2. Generate index.md (Table of Contents)
   const indexMarkdownLines = [
     `# Knowledge Base Index — ${dateStr}`,
