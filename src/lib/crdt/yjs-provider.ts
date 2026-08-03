@@ -83,3 +83,18 @@ export function clearAllYjsDocs(): void {
   }
   activeYjsDocs.clear()
 }
+
+/**
+ * Creates an isolated, local-only fork of a Y.Doc instance with a specified clientID.
+ * The forked Y.Doc receives the state vector update from mainDoc but is NOT bound
+ * to IndexedDB persistence or WebRTC network sync providers.
+ */
+export function forkYDoc(mainDoc: Y.Doc, customClientID?: number): Y.Doc {
+  const branchDoc = new Y.Doc({ gc: false })
+  if (customClientID !== undefined) {
+    branchDoc.clientID = customClientID
+  }
+  const stateUpdate = Y.encodeStateAsUpdate(mainDoc)
+  Y.applyUpdate(branchDoc, stateUpdate)
+  return branchDoc
+}

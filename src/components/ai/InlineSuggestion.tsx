@@ -3,6 +3,8 @@ import { Plugin, PluginKey } from "@tiptap/pm/state"
 import { Decoration, DecorationSet } from "@tiptap/pm/view"
 import { generateInlineSuggestion } from "@/lib/ai/rag-pipeline"
 import { llmClient } from "@/lib/ai/llm-client"
+import { createAIBranch, acceptBranch, rejectBranch, type AIBranch } from "@/lib/crdt/ai-branch"
+import type * as Y from "yjs"
 
 export interface InlineSuggestionState {
   active: boolean
@@ -13,6 +15,7 @@ export interface InlineSuggestionState {
   from: number
   to: number
   error?: string
+  aiBranch?: AIBranch
 }
 
 const initialSuggestionState: InlineSuggestionState = {
@@ -190,6 +193,11 @@ export const InlineSuggestionExtension = Extension.create({
   },
 })
 
+function getYjsDocFromEditor(editor: Editor): Y.Doc | null {
+  const collabExt = editor.extensionManager.extensions.find((ext) => ext.name === "collaboration")
+  return (collabExt?.options as { document?: Y.Doc })?.document || null
+}
+
 function triggerContinuation(editor: Editor): boolean {
   if (llmClient.getStatus() !== "ready") {
     console.warn("Inline suggestion requires LLM model to be loaded first.")
@@ -213,6 +221,9 @@ function triggerContinuation(editor: Editor): boolean {
   }
   activeAbortController = new AbortController()
 
+  const mainDoc = getYjsDocFromEditor(editor)
+  const aiBranch = mainDoc ? createAIBranch(mainDoc) : undefined
+
   // Set initial state
   editor.view.dispatch(
     editor.state.tr.setMeta(inlineSuggestionPluginKey, {
@@ -225,6 +236,7 @@ function triggerContinuation(editor: Editor): boolean {
         suggestedText: "",
         from: pos,
         to: pos,
+        aiBranch,
       },
     })
   )
@@ -306,6 +318,9 @@ function triggerRephrase(editor: Editor): boolean {
   }
   activeAbortController = new AbortController()
 
+  const mainDoc = getYjsDocFromEditor(editor)
+  const aiBranch = mainDoc ? createAIBranch(mainDoc) : undefined
+
   editor.view.dispatch(
     editor.state.tr.setMeta(inlineSuggestionPluginKey, {
       type: "set",
@@ -317,6 +332,7 @@ function triggerRephrase(editor: Editor): boolean {
         suggestedText: "",
         from,
         to,
+        aiBranch,
       },
     })
   )
@@ -376,8 +392,13 @@ function triggerRephrase(editor: Editor): boolean {
 }
 
 function acceptSuggestion(editor: Editor, state: InlineSuggestionState) {
-  const { type, suggestedText, from, to } = state
+  const { type, suggestedText, from, to, aiBranch } = state
   if (!suggestedText) return
+
+  const mainDoc = getYjsDocFromEditor(editor)
+  if (aiBranch && mainDoc) {
+    acceptBranch(mainDoc, aiBranch)
+  }
 
   if (type === "continue") {
     editor.chain().focus().insertContentAt(from, suggestedText).run()
@@ -394,6 +415,11 @@ function acceptSuggestion(editor: Editor, state: InlineSuggestionState) {
 }
 
 function rejectSuggestion(editor: Editor) {
+  const state = inlineSuggestionPluginKey.getState(editor.state)
+  if (state?.aiBranch) {
+    rejectBranch(state.aiBranch)
+  }
+
   editor.view.dispatch(
     editor.state.tr.setMeta(inlineSuggestionPluginKey, {
       type: "clear",
