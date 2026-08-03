@@ -1,12 +1,16 @@
-import { useState } from "react"
+import { useEffect } from "react"
 import { useNavigate } from "react-router"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Editor } from "@/components/editor/Editor"
+import { Sidebar } from "./Sidebar"
+import { useDocumentStore } from "@/stores/document-store"
+import { useUIStore } from "@/stores/ui-store"
+import { useDocument } from "@/hooks/useDocument"
+import { createDocument, listDocuments } from "@/lib/db/operations"
 import {
   Compass,
-  Plus,
   FileText,
   Sparkles,
   Network,
@@ -17,12 +21,108 @@ import {
   Cpu,
   Share2,
   Lock,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react"
+
+const DEFAULT_WELCOME_CONTENT = {
+  type: "doc",
+  content: [
+    {
+      type: "heading",
+      attrs: { level: 1 },
+      content: [{ type: "text", text: "Welcome to Sovereign" }],
+    },
+    {
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "Sovereign is a local-first, privacy-focused personal knowledge management system built with ",
+        },
+        { type: "text", marks: [{ type: "bold" }], text: "Tiptap v3" },
+        { type: "text", text: ", " },
+        { type: "text", marks: [{ type: "bold" }], text: "Yjs CRDTs" },
+        { type: "text", text: ", and " },
+        { type: "text", marks: [{ type: "bold" }], text: "WebLLM" },
+        { type: "text", text: "." },
+      ],
+    },
+    {
+      type: "callout",
+      attrs: { type: "info" },
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            {
+              type: "text",
+              text: "All documents are stored locally on your device in OPFS and IndexedDB. Zero cloud telemetry.",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "Type '/' to insert callouts, toggle sections, code blocks, or lists. Create wiki links by typing '[['.",
+        },
+      ],
+    },
+  ],
+}
 
 export function WorkspaceLayout() {
   const navigate = useNavigate()
-  const [rightPanelOpen, setRightPanelOpen] = useState(true)
-  const [activeRightTab, setActiveRightTab] = useState<"graph" | "ai">("graph")
+
+  const { activeDocumentId, setActiveDocumentId } = useDocumentStore()
+  const {
+    sidebarOpen,
+    toggleSidebar,
+    rightPanelOpen,
+    toggleRightPanel,
+    rightPanelView,
+    setRightPanelView,
+  } = useUIStore()
+
+  const {
+    document: activeDoc,
+    isLoading: isDocLoading,
+    isSaving,
+    saveContent,
+    updateTitle,
+  } = useDocument(activeDocumentId)
+
+  // Initialize workspace: create default document if DB is empty
+  useEffect(() => {
+    let isMounted = true
+    async function initWorkspace() {
+      const existing = await listDocuments()
+      if (!isMounted) return
+
+      if (existing.length === 0) {
+        const welcomeDoc = await createDocument("Welcome to Sovereign", DEFAULT_WELCOME_CONTENT)
+        if (isMounted) {
+          setActiveDocumentId(welcomeDoc.id)
+        }
+      } else if (!activeDocumentId) {
+        setActiveDocumentId(existing[0].id)
+      }
+    }
+
+    initWorkspace()
+    return () => {
+      isMounted = false
+    }
+  }, [activeDocumentId, setActiveDocumentId])
+
+  const handleCreateNewDocument = async () => {
+    const newDoc = await createDocument("Untitled Note")
+    setActiveDocumentId(newDoc.id)
+  }
 
   return (
     <div className="h-screen w-screen flex flex-col bg-background text-foreground overflow-hidden selection:bg-brass/30 selection:text-brass font-sans">
@@ -57,14 +157,14 @@ export function WorkspaceLayout() {
         <div className="flex items-center gap-2">
           <Badge variant="moss" className="hidden sm:inline-flex gap-1.5 text-[10px] font-mono">
             <HardDrive className="w-3 h-3" />
-            <span>OPFS Active</span>
+            <span>IndexedDB + OPFS</span>
           </Badge>
 
           <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8 text-muted-foreground hover:text-parchment"
-            onClick={() => setRightPanelOpen(!rightPanelOpen)}
+            onClick={toggleRightPanel}
             title={rightPanelOpen ? "Collapse Right Panel" : "Expand Right Panel"}
           >
             {rightPanelOpen ? (
@@ -79,67 +179,56 @@ export function WorkspaceLayout() {
       {/* Main 3-Column Grid Area */}
       <div className="flex-1 flex overflow-hidden">
         {/* Column 1: Left Sidebar */}
-        <aside className="w-64 bg-ink border-r border-slate-line flex flex-col shrink-0">
-          {/* Sidebar Header & New Note CTA */}
-          <div className="p-3 border-b border-slate-line space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-brass">
-                Field Documents
-              </span>
-              <Button size="sm" variant="stamp" className="h-7 px-2 text-[10px] gap-1">
-                <Plus className="w-3.5 h-3.5" />
-                <span>New Note</span>
-              </Button>
-            </div>
-          </div>
-
-          {/* Document Navigation List */}
-          <div className="flex-1 overflow-y-auto p-2 space-y-1 font-sans">
-            <div className="survey-card p-2.5 rounded-sm border-brass bg-secondary/60 flex items-center gap-2 text-xs font-medium text-parchment cursor-pointer">
-              <FileText className="w-4 h-4 text-brass shrink-0" />
-              <span className="truncate">Welcome to Sovereign</span>
-            </div>
-
-            <div className="p-2.5 rounded-sm hover:bg-secondary/40 flex items-center gap-2 text-xs text-muted-foreground hover:text-parchment cursor-pointer transition-colors">
-              <FileText className="w-4 h-4 shrink-0 text-muted-foreground" />
-              <span className="truncate">Field Survey Specification</span>
-            </div>
-
-            <div className="p-2.5 rounded-sm hover:bg-secondary/40 flex items-center gap-2 text-xs text-muted-foreground hover:text-parchment cursor-pointer transition-colors">
-              <FileText className="w-4 h-4 shrink-0 text-muted-foreground" />
-              <span className="truncate">Local AI & WebGPU Roadmap</span>
-            </div>
-          </div>
-
-          {/* Sidebar Bottom Footer */}
-          <div className="p-3 border-t border-slate-line space-y-2 bg-secondary/30">
-            <div className="flex items-center justify-between text-[10px] text-muted-foreground font-mono">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-moss animate-pulse" />
-                Device Storage
-              </span>
-              <span className="text-moss">100% Offline</span>
-            </div>
-          </div>
-        </aside>
+        <Sidebar
+          isOpen={sidebarOpen}
+          onToggleOpen={toggleSidebar}
+          activeDocumentId={activeDocumentId}
+          onSelectDocument={setActiveDocumentId}
+          onCreateDocument={handleCreateNewDocument}
+        />
 
         {/* Column 2: Center Editor Canvas */}
         <main className="flex-1 flex flex-col bg-background relative overflow-hidden">
           {/* Document Top Toolbar Header */}
           <div className="h-10 border-b border-slate-line flex items-center justify-between px-6 bg-secondary/20 text-xs shrink-0 font-mono">
-            <div className="flex items-center gap-2">
-              <FileText className="w-3.5 h-3.5 text-brass" />
-              <span className="font-semibold text-parchment font-sans">Welcome to Sovereign</span>
-              <Badge
-                variant="outline"
-                className="text-[9px] py-0 border-slate-line text-muted-foreground"
-              >
-                Saved Locally
-              </Badge>
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <FileText className="w-3.5 h-3.5 text-brass shrink-0" />
+              {activeDoc ? (
+                <input
+                  type="text"
+                  value={activeDoc.title}
+                  onChange={(e) => updateTitle(e.target.value)}
+                  className="bg-transparent text-parchment font-semibold font-sans text-xs focus:outline-none focus:border-b border-brass truncate max-w-xs md:max-w-md"
+                  placeholder="Untitled Document"
+                />
+              ) : (
+                <span className="font-semibold text-muted-foreground font-sans">
+                  No Document Selected
+                </span>
+              )}
+
+              {isSaving ? (
+                <Badge
+                  variant="outline"
+                  className="text-[9px] py-0 gap-1 border-brass text-brass animate-pulse"
+                >
+                  <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                  Saving...
+                </Badge>
+              ) : activeDoc ? (
+                <Badge
+                  variant="outline"
+                  className="text-[9px] py-0 gap-1 border-slate-line text-muted-foreground"
+                >
+                  <CheckCircle2 className="w-2.5 h-2.5 text-moss" />
+                  Saved Locally
+                </Badge>
+              ) : null}
             </div>
 
-            <div className="flex items-center gap-3 text-muted-foreground">
-              <span className="inline-flex items-center gap-1">
+            <div className="flex items-center gap-3 text-muted-foreground text-[11px]">
+              {activeDoc && <span>{activeDoc.wordCount} words</span>}
+              <span className="hidden md:inline-flex items-center gap-1">
                 <Share2 className="w-3.5 h-3.5 text-brass" />
                 P2P Ready
               </span>
@@ -148,7 +237,22 @@ export function WorkspaceLayout() {
 
           {/* Main Editor Canvas Container */}
           <div className="flex-1 p-4 md:p-6 overflow-hidden flex flex-col">
-            <Editor content='<h1>Welcome to Sovereign</h1><p>Sovereign is a local-first, privacy-focused personal knowledge management system built with <strong>Tiptap v3</strong>, <strong>Yjs CRDTs</strong>, and <strong>WebLLM</strong>.</p><div data-type="callout" data-callout-type="info"><p>All documents are stored locally on your device in OPFS and IndexedDB. Zero cloud telemetry.</p></div><p>Explore linked documents such as <span data-type="wiki-link" data-title="Field Survey Specification">[[Field Survey Specification]]</span> and <span data-type="wiki-link" data-title="Local AI & WebGPU Roadmap">[[Local AI & WebGPU Roadmap]]</span>.</p><details data-type="collapsible-block" open><summary>Architecture Briefing</summary><div class="collapsible-content"><p>Type <code>/</code> to insert callouts, toggle sections, code blocks, or lists.</p></div></details>' />
+            {isDocLoading ? (
+              <div className="flex-1 flex items-center justify-center font-mono text-xs text-muted-foreground gap-2">
+                <Loader2 className="w-4 h-4 animate-spin text-brass" />
+                <span>Loading note content...</span>
+              </div>
+            ) : activeDoc ? (
+              <Editor
+                key={activeDoc.id}
+                content={activeDoc.content}
+                onUpdateJSON={(json) => saveContent(json)}
+              />
+            ) : (
+              <div className="flex-1 flex items-center justify-center font-mono text-xs text-muted-foreground">
+                Select or create a document to begin writing.
+              </div>
+            )}
           </div>
         </main>
 
@@ -158,20 +262,20 @@ export function WorkspaceLayout() {
             {/* Panel Tabs Header */}
             <div className="p-2 border-b border-slate-line flex items-center gap-1 bg-secondary/30 font-mono">
               <Button
-                variant={activeRightTab === "graph" ? "default" : "ghost"}
+                variant={rightPanelView === "graph" ? "default" : "ghost"}
                 size="sm"
                 className="flex-1 h-7 text-[11px] gap-1.5"
-                onClick={() => setActiveRightTab("graph")}
+                onClick={() => setRightPanelView("graph")}
               >
                 <Network className="w-3.5 h-3.5 text-brass" />
                 <span>Topology</span>
               </Button>
 
               <Button
-                variant={activeRightTab === "ai" ? "default" : "ghost"}
+                variant={rightPanelView === "ai" ? "default" : "ghost"}
                 size="sm"
                 className="flex-1 h-7 text-[11px] gap-1.5"
-                onClick={() => setActiveRightTab("ai")}
+                onClick={() => setRightPanelView("ai")}
               >
                 <Cpu className="w-3.5 h-3.5 text-brass" />
                 <span>AI Agent</span>
@@ -180,7 +284,7 @@ export function WorkspaceLayout() {
 
             {/* Panel Content Area */}
             <div className="flex-1 p-4 overflow-y-auto space-y-4 font-sans">
-              {activeRightTab === "graph" ? (
+              {rightPanelView === "graph" ? (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-xs font-mono">
                     <span className="font-semibold text-brass uppercase">Knowledge Graph</span>

@@ -1,4 +1,5 @@
-import { useEditor, EditorContent } from "@tiptap/react"
+import { useEffect } from "react"
+import { useEditor, EditorContent, type JSONContent } from "@tiptap/react"
 import { StarterKit } from "@tiptap/starter-kit"
 import { Placeholder } from "@tiptap/extensions"
 import { Toolbar } from "./Toolbar"
@@ -8,8 +9,10 @@ import { CollapsibleBlockNode } from "./CollapsibleBlock"
 import { CalloutBlockNode } from "./CalloutBlock"
 
 interface EditorProps {
-  content?: string
+  content?: JSONContent | string
   onChange?: (content: string) => void
+  onUpdateJSON?: (content: JSONContent) => void
+  onUpdateHTML?: (content: string) => void
   placeholder?: string
   readOnly?: boolean
 }
@@ -17,6 +20,8 @@ interface EditorProps {
 export function Editor({
   content = "",
   onChange,
+  onUpdateJSON,
+  onUpdateHTML,
   placeholder = "Start typing your notes, or type '/' for slash commands, '[[' for wiki links...",
   readOnly = false,
 }: EditorProps) {
@@ -38,9 +43,26 @@ export function Editor({
       CalloutBlockNode,
     ],
     onUpdate: ({ editor }) => {
-      onChange?.(editor.getHTML())
+      const html = editor.getHTML()
+      const json = editor.getJSON()
+      onChange?.(html)
+      onUpdateHTML?.(html)
+      onUpdateJSON?.(json)
     },
   })
+
+  // Sync content when document selection changes
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return
+    const currentJSON = JSON.stringify(editor.getJSON())
+    const nextJSON = typeof content === "object" ? JSON.stringify(content) : null
+
+    if (nextJSON && currentJSON !== nextJSON) {
+      editor.commands.setContent(content)
+    } else if (typeof content === "string" && content !== editor.getHTML()) {
+      editor.commands.setContent(content)
+    }
+  }, [editor, content])
 
   return (
     <div className="w-full flex-1 flex flex-col min-h-0 bg-background rounded-sm border border-slate-line overflow-hidden">
