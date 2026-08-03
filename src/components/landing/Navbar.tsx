@@ -1,11 +1,13 @@
 import { useState } from "react"
 import { useNavigate } from "react-router"
 import { Button } from "@/components/ui/button"
-import { Compass, Menu, X, ArrowUpRight } from "lucide-react"
+import { Compass, Menu, X, ArrowUpRight, Download } from "lucide-react"
+import { usePWAInstall } from "@/hooks/usePWAInstall"
 
 export function Navbar() {
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { isInstallable, promptInstall } = usePWAInstall()
 
   return (
     <header className="sticky top-0 z-50 w-full bg-ink/95 border-b border-slate-line">
@@ -38,8 +40,20 @@ export function Navbar() {
           </a>
         </nav>
 
-        {/* Desktop CTA */}
-        <div className="hidden md:flex items-center gap-4">
+        {/* Desktop CTA & PWA Install Button */}
+        <div className="hidden md:flex items-center gap-3">
+          {isInstallable && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 font-mono text-xs border-brass/50 text-brass hover:bg-brass/10"
+              onClick={promptInstall}
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Install App</span>
+            </Button>
+          )}
+
           <Button
             variant="default"
             size="sm"
@@ -86,7 +100,21 @@ export function Navbar() {
           >
             Governance
           </a>
-          <div className="pt-2">
+          <div className="pt-2 space-y-2">
+            {isInstallable && (
+              <Button
+                variant="outline"
+                className="w-full gap-2 text-xs border-brass/50 text-brass hover:bg-brass/10"
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  promptInstall()
+                }}
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Install Desktop / Mobile App</span>
+              </Button>
+            )}
+
             <Button
               variant="default"
               className="w-full gap-2 text-xs"
