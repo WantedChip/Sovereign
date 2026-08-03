@@ -2,6 +2,7 @@ import { useEditor, EditorContent } from "@tiptap/react"
 import { StarterKit } from "@tiptap/starter-kit"
 import { Placeholder } from "@tiptap/extensions"
 import { Toolbar } from "./Toolbar"
+import { SlashCommand } from "./SlashCommandExtension"
 
 interface EditorProps {
   content?: string
@@ -28,6 +29,7 @@ export function Editor({
       Placeholder.configure({
         placeholder,
       }),
+      SlashCommand,
     ],
     onUpdate: ({ editor }) => {
       onChange?.(editor.getHTML())
