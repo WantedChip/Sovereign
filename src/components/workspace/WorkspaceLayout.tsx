@@ -9,7 +9,6 @@ import { useDocumentStore } from "@/stores/document-store"
 import { useUIStore } from "@/stores/ui-store"
 import { useDocument } from "@/hooks/useDocument"
 import { createDocument, listDocuments } from "@/lib/db/operations"
-import { getYjsDoc } from "@/lib/crdt/yjs-provider"
 import {
   Compass,
   FileText,
@@ -91,6 +90,7 @@ export function WorkspaceLayout() {
 
   const {
     document: activeDoc,
+    yjsSession,
     isLoading: isDocLoading,
     isSaving,
     saveContent,
@@ -241,13 +241,13 @@ export function WorkspaceLayout() {
             {isDocLoading ? (
               <div className="flex-1 flex items-center justify-center font-mono text-xs text-muted-foreground gap-2">
                 <Loader2 className="w-4 h-4 animate-spin text-brass" />
-                <span>Loading note content...</span>
+                <span>Loading note content & syncing IndexedDB persistence...</span>
               </div>
-            ) : activeDoc ? (
+            ) : activeDoc && yjsSession ? (
               <Editor
                 key={activeDoc.id}
-                ydoc={getYjsDoc(activeDoc.id).ydoc}
-                xmlFragment={getYjsDoc(activeDoc.id).xmlFragment}
+                ydoc={yjsSession.ydoc}
+                xmlFragment={yjsSession.xmlFragment}
                 content={activeDoc.content}
                 onUpdateJSON={(json) => saveContent(json)}
               />

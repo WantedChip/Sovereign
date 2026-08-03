@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import type { JSONContent } from "@tiptap/react"
 import { getDocument, updateDocument } from "@/lib/db/operations"
+import { getYjsDoc, type YjsDocSession } from "@/lib/crdt/yjs-provider"
 import type { Document } from "@/types"
 
 export interface UseDocumentReturn {
   document: Document | null
+  yjsSession: YjsDocSession | null
   isLoading: boolean
   isSaving: boolean
   error: Error | null
@@ -22,11 +24,14 @@ export function useDocument(id: string | null, debounceMs = 500): UseDocumentRet
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingContentRef = useRef<JSONContent | string | null>(null)
 
+  const yjsSession = id ? getYjsDoc(id) : null
+
   const fetchDocument = useCallback(async (docId: string) => {
     setIsLoading(true)
     setError(null)
     try {
-      const doc = await getDocument(docId)
+      const session = getYjsDoc(docId)
+      const [doc] = await Promise.all([getDocument(docId), session.whenSynced])
       setDocument(doc)
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to load document"))
@@ -52,8 +57,10 @@ export function useDocument(id: string | null, debounceMs = 500): UseDocumentRet
       if (isMounted) setIsLoading(true)
     })
 
-    getDocument(id)
-      .then((doc) => {
+    const session = getYjsDoc(id)
+
+    Promise.all([getDocument(id), session.whenSynced])
+      .then(([doc]) => {
         if (isMounted) {
           setDocument(doc)
           setIsLoading(false)
@@ -129,6 +136,7 @@ export function useDocument(id: string | null, debounceMs = 500): UseDocumentRet
 
   return {
     document,
+    yjsSession,
     isLoading,
     isSaving,
     error,
