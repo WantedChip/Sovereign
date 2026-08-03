@@ -49,3 +49,15 @@ export interface SearchResult {
   chunkIndex: number
   updatedAt?: number
 }
+
+export interface RAGChunk {
+  type: "source" | "token" | "done" | "error"
+  content: string
+  sourceDoc?: {
+    id: string
+    title: string
+    heading: string
+    score?: number
+  }
+  sources?: SearchResult[]
+}
