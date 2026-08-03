@@ -27,12 +27,14 @@ interface SettingsState {
   autoSaveDelay: number
   username: string
   userColor: string
+  selectedModel: string
   setTheme: (theme: "dark" | "light") => void
   setFontSize: (size: number) => void
   setAutoSave: (enabled: boolean) => void
   setAutoSaveDelay: (delayMs: number) => void
   setUsername: (name: string) => void
   setUserColor: (color: string) => void
+  setSelectedModel: (model: string) => void
 }
 
 const dexieStorage = {
@@ -71,12 +73,14 @@ export const useSettingsStore = create<SettingsState>()(
       autoSaveDelay: 500,
       username: initialIdentity.username,
       userColor: initialIdentity.userColor,
+      selectedModel: "Llama-3.2-1B-Instruct-q4f16_1-MLC",
       setTheme: (theme) => set({ theme }),
       setFontSize: (fontSize) => set({ fontSize }),
       setAutoSave: (autoSave) => set({ autoSave }),
       setAutoSaveDelay: (autoSaveDelay) => set({ autoSaveDelay }),
       setUsername: (username) => set({ username }),
       setUserColor: (userColor) => set({ userColor }),
+      setSelectedModel: (selectedModel) => set({ selectedModel }),
     }),
     {
       name: "sovereign-user-settings",

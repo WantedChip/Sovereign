@@ -16,11 +16,12 @@ import { useDocument } from "@/hooks/useDocument"
 import { createDocument, listDocuments } from "@/lib/db/operations"
 import { PresenceAvatars } from "@/components/collaboration/PresenceAvatars"
 import { ConnectionStatus } from "@/components/collaboration/ConnectionStatus"
+import { ModelDownloadProgress } from "@/components/ai/ModelDownloadProgress"
+import { AVAILABLE_LLM_MODELS } from "@/lib/ai/llm-client"
 
 import {
   Compass,
   FileText,
-  Sparkles,
   Network,
   PanelRightClose,
   PanelRightOpen,
@@ -97,7 +98,7 @@ export function WorkspaceLayout() {
     searchQuery,
   } = useUIStore()
 
-  const { username, userColor } = useSettingsStore()
+  const { username, userColor, selectedModel, setSelectedModel } = useSettingsStore()
 
   const {
     document: activeDoc,
@@ -348,24 +349,30 @@ export function WorkspaceLayout() {
               ) : (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="font-semibold text-brass uppercase">WebGPU AI Co-Pilot</span>
+                    <span className="font-semibold text-brass uppercase">WebGPU AI Engine</span>
                     <Badge variant="outline" className="text-[9px]">
-                      v0.7
+                      v0.7.0
                     </Badge>
                   </div>
 
-                  <div className="survey-card p-6 rounded-sm border-slate-line text-center space-y-3">
-                    <div className="w-10 h-10 rounded-sm bg-brass/10 border border-brass flex items-center justify-center mx-auto">
-                      <Sparkles className="w-5 h-5 text-brass" />
-                    </div>
-                    <div className="text-xs font-mono font-semibold text-parchment">
-                      On-Device LLM & RAG
-                    </div>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      Local GPU inference powered by WebLLM for private RAG query synthesis arrives
-                      in sub-phase v0.7.
-                    </p>
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-mono text-muted-foreground block">
+                      Select On-Device LLM:
+                    </label>
+                    <select
+                      value={selectedModel}
+                      onChange={(e) => setSelectedModel(e.target.value)}
+                      className="w-full bg-secondary/40 border border-slate-line rounded-sm p-2 text-xs font-mono text-parchment focus:outline-none focus:border-brass"
+                    >
+                      {AVAILABLE_LLM_MODELS.map((m) => (
+                        <option key={m.id} value={m.id} className="bg-ink text-parchment">
+                          {m.name} ({m.size})
+                        </option>
+                      ))}
+                    </select>
                   </div>
+
+                  <ModelDownloadProgress key={selectedModel} modelId={selectedModel} />
                 </div>
               )}
             </div>
