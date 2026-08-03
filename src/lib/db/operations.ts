@@ -6,6 +6,7 @@ import {
   resolveLinksForDocument,
   removeDocumentLinks,
 } from "@/lib/graph/link-index"
+import { indexDocument, removeDocument } from "@/lib/search/orama-index"
 import type { Document, DocumentMeta } from "@/types"
 
 export function extractTextFromJSON(node: unknown): string {
@@ -58,6 +59,7 @@ export async function createDocument(
 
   await updateDocumentLinks(id, docContent)
   await resolveLinksForDocument(id, docTitle)
+  void indexDocument(id, docTitle, docContent, now.getTime())
 
   return {
     ...docRecord,
@@ -110,13 +112,19 @@ export async function updateDocument(
 
   await db.documents.update(id, updatedMeta)
 
-  return await getDocument(id)
+  const finalDoc = await getDocument(id)
+  if (finalDoc && (updates.content !== undefined || updates.title !== undefined)) {
+    void indexDocument(id, finalDoc.title, finalDoc.content, finalDoc.updatedAt.getTime())
+  }
+
+  return finalDoc
 }
 
 export async function deleteDocument(id: string): Promise<void> {
   await db.documents.delete(id)
   await opfsClient.deleteDocumentContent(id)
   await removeDocumentLinks(id)
+  void removeDocument(id)
 }
 
 export async function listDocuments(): Promise<DocumentMeta[]> {
