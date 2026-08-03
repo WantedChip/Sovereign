@@ -2,8 +2,8 @@ import { useState } from "react"
 import { useNavigate } from "react-router"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { Editor } from "@/components/editor/Editor"
 import {
   Compass,
   Plus,
@@ -17,8 +17,6 @@ import {
   Cpu,
   Share2,
   Lock,
-  Search,
-  Command,
 } from "lucide-react"
 
 export function WorkspaceLayout() {
@@ -149,56 +147,8 @@ export function WorkspaceLayout() {
           </div>
 
           {/* Main Editor Canvas Container */}
-          <div className="flex-1 p-6 md:p-10 overflow-y-auto flex flex-col items-center justify-center">
-            <Card
-              coord="N·00"
-              className="max-w-2xl w-full text-center p-8 space-y-6 border-brass/60"
-            >
-              <CardHeader className="p-0 space-y-2">
-                <div className="w-12 h-12 rounded-sm bg-brass/10 border border-brass flex items-center justify-center mx-auto mb-2">
-                  <FileText className="w-6 h-6 text-brass" />
-                </div>
-                <CardTitle className="text-2xl font-serif font-bold text-parchment">
-                  Core Document Editor
-                </CardTitle>
-                <CardDescription className="text-sm max-w-md mx-auto font-sans">
-                  The Tiptap v3 rich-text editor with markdown serialization, slash commands, and
-                  [[wikilinks]] is scheduled for sub-phase{" "}
-                  <span className="text-brass font-semibold">v0.2</span>.
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent className="p-0 space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-                  <div className="survey-card p-3 rounded-sm border-slate-line space-y-1">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-parchment font-mono">
-                      <Command className="w-3.5 h-3.5 text-brass" />
-                      <span>Slash Commands</span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground font-sans">
-                      Type / to insert code blocks, callouts, or tables.
-                    </p>
-                  </div>
-
-                  <div className="survey-card p-3 rounded-sm border-slate-line space-y-1">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-parchment font-mono">
-                      <Search className="w-3.5 h-3.5 text-brass" />
-                      <span>[[Wiki Links]]</span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground font-sans">
-                      Type [[ to connect entries into the knowledge graph.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="pt-2 text-xs font-mono text-muted-foreground bg-ink border border-slate-line p-3 rounded-sm flex items-center justify-between">
-                  <span>Field Survey Shell (v0.1.5)</span>
-                  <Badge variant="moss" className="text-[10px]">
-                    Ready for v0.2
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="flex-1 p-4 md:p-6 overflow-hidden flex flex-col">
+            <Editor content="<h1>Welcome to Sovereign</h1><p>Sovereign is a local-first, privacy-focused personal knowledge management system built with <strong>Tiptap v3</strong>, <strong>Yjs CRDTs</strong>, and <strong>WebLLM</strong>.</p><blockquote>All documents are stored locally on your device in OPFS and IndexedDB. Zero cloud telemetry.</blockquote><p>Try using the formatting toolbar above to style your content, or insert headings, lists, code blocks, and blockquotes.</p>" />
           </div>
         </main>
 
