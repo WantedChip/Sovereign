@@ -338,3 +338,34 @@
   border-color: var(--color-oxblood);
   color: var(--color-parchment);
 }
+
+/* Tiptap Collaboration Carets & Remote Cursor Styling */
+.collaboration-carets__cursor {
+  position: relative;
+  margin-left: -1px;
+  margin-right: -1px;
+  border-left: 2px solid var(--color-user);
+  border-right: 0px solid transparent;
+  word-break: normal;
+  pointer-events: none;
+  transition: transform 0.12s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.collaboration-carets__label {
+  position: absolute;
+  top: -1.35em;
+  left: -2px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 2px 2px 2px 0;
+  color: #0a0d0c;
+  background-color: var(--color-user);
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}

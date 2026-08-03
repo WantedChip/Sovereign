@@ -7,8 +7,11 @@ import { Editor } from "@/components/editor/Editor"
 import { Sidebar } from "./Sidebar"
 import { useDocumentStore } from "@/stores/document-store"
 import { useUIStore } from "@/stores/ui-store"
+import { useSettingsStore } from "@/stores/settings-store"
 import { useDocument } from "@/hooks/useDocument"
 import { createDocument, listDocuments } from "@/lib/db/operations"
+import { PresenceAvatars } from "@/components/collaboration/PresenceAvatars"
+import { ConnectionStatus } from "@/components/collaboration/ConnectionStatus"
 import {
   Compass,
   FileText,
@@ -88,6 +91,8 @@ export function WorkspaceLayout() {
     setRightPanelView,
   } = useUIStore()
 
+  const { username, userColor } = useSettingsStore()
+
   const {
     document: activeDoc,
     yjsSession,
@@ -155,7 +160,17 @@ export function WorkspaceLayout() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <PresenceAvatars
+            provider={yjsSession?.webrtcProvider}
+            currentUser={{ name: username, color: userColor }}
+          />
+
+          <ConnectionStatus
+            isConnected={yjsSession?.isConnected}
+            peerCount={yjsSession?.peerCount}
+          />
+
           <Badge variant="moss" className="hidden sm:inline-flex gap-1.5 text-[10px] font-mono">
             <HardDrive className="w-3 h-3" />
             <span>IndexedDB + OPFS</span>
@@ -251,6 +266,7 @@ export function WorkspaceLayout() {
                 ydoc={yjsSession.ydoc}
                 xmlFragment={yjsSession.xmlFragment}
                 provider={yjsSession.webrtcProvider}
+                user={{ name: username, color: userColor }}
                 content={activeDoc.content}
                 onUpdateJSON={(json) => saveContent(json)}
               />
