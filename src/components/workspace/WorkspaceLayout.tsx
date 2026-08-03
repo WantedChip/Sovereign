@@ -231,7 +231,9 @@ export function WorkspaceLayout() {
               {activeDoc && <span>{activeDoc.wordCount} words</span>}
               <span className="hidden md:inline-flex items-center gap-1">
                 <Share2 className="w-3.5 h-3.5 text-brass" />
-                P2P Ready
+                {yjsSession && yjsSession.peerCount > 0
+                  ? `P2P Mesh (${yjsSession.peerCount} peer${yjsSession.peerCount === 1 ? "" : "s"})`
+                  : "P2P Ready"}
               </span>
             </div>
           </div>
@@ -248,6 +250,7 @@ export function WorkspaceLayout() {
                 key={activeDoc.id}
                 ydoc={yjsSession.ydoc}
                 xmlFragment={yjsSession.xmlFragment}
+                provider={yjsSession.webrtcProvider}
                 content={activeDoc.content}
                 onUpdateJSON={(json) => saveContent(json)}
               />
