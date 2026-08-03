@@ -34,6 +34,7 @@
     "cytoscape-fcose": "^2.2.0",
     "dexie": "^4.4.4",
     "dexie-react-hooks": "^4.4.0",
+    "fflate": "^0.8.3",
     "lucide-react": "^1.28.0",
     "markdown-it": "^15.0.0",
     "prosemirror-markdown": "^1.13.5",

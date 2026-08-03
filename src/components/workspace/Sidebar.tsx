@@ -1,7 +1,18 @@
+import { useState } from "react"
 import { useUIStore } from "@/stores/ui-store"
 import { Button } from "@/components/ui/button"
 import { DocumentList } from "./DocumentList"
-import { Plus, Search, PanelLeftClose, PanelLeftOpen, Compass, HardDrive } from "lucide-react"
+import {
+  Plus,
+  Search,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Compass,
+  HardDrive,
+  Download,
+  Loader2,
+} from "lucide-react"
+import { exportKnowledgeBase, downloadExport } from "@/lib/export/zip-export"
 
 interface SidebarProps {
   activeDocumentId: string | null
@@ -19,6 +30,29 @@ export function Sidebar({
   onToggleOpen,
 }: SidebarProps) {
   const { searchQuery, setSearchQuery, setCommandPaletteOpen } = useUIStore()
+  const [isExporting, setIsExporting] = useState(false)
+  const [exportProgressText, setExportProgressText] = useState("")
+
+  const handleExport = async () => {
+    if (isExporting) return
+    setIsExporting(true)
+    setExportProgressText("Preparing...")
+
+    try {
+      const blob = await exportKnowledgeBase((progress) => {
+        setExportProgressText(`${progress.current}/${progress.total}`)
+      })
+      downloadExport(blob)
+      setExportProgressText("Export Complete!")
+      setTimeout(() => setExportProgressText(""), 2500)
+    } catch (err) {
+      console.error("Export failed:", err)
+      setExportProgressText("Export Failed")
+      setTimeout(() => setExportProgressText(""), 3000)
+    } finally {
+      setIsExporting(false)
+    }
+  }
 
   if (!isOpen) {
     return (
@@ -40,6 +74,20 @@ export function Sidebar({
           title="New Note"
         >
           <Plus className="w-4 h-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8 mt-2 text-muted-foreground hover:text-brass"
+          onClick={handleExport}
+          title="Export Knowledge Base as Markdown ZIP"
+          disabled={isExporting}
+        >
+          {isExporting ? (
+            <Loader2 className="w-4 h-4 animate-spin text-brass" />
+          ) : (
+            <Download className="w-4 h-4" />
+          )}
         </Button>
       </div>
     )
@@ -110,8 +158,8 @@ export function Sidebar({
         searchQuery={searchQuery}
       />
 
-      {/* Storage Footer */}
-      <div className="p-3 border-t border-slate-line space-y-1.5 bg-secondary/30 font-mono text-[10px]">
+      {/* Storage & Export Footer */}
+      <div className="p-3 border-t border-slate-line space-y-2 bg-secondary/30 font-mono text-[10px]">
         <div className="flex items-center justify-between text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <HardDrive className="w-3 h-3 text-brass" />
@@ -119,6 +167,27 @@ export function Sidebar({
           </span>
           <span className="text-moss font-semibold">IndexedDB + OPFS</span>
         </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExport}
+          disabled={isExporting}
+          className="w-full h-7 text-[11px] font-mono gap-1.5 border-slate-line hover:border-brass/50 bg-ink/60 hover:bg-brass/10 text-parchment transition-colors"
+          title="Export Knowledge Base as structured Markdown ZIP archive"
+        >
+          {isExporting ? (
+            <>
+              <Loader2 className="w-3 h-3 animate-spin text-brass" />
+              <span>Exporting {exportProgressText}</span>
+            </>
+          ) : (
+            <>
+              <Download className="w-3 h-3 text-brass" />
+              <span>{exportProgressText || "Export Knowledge Base ZIP"}</span>
+            </>
+          )}
+        </Button>
       </div>
     </aside>
   )
