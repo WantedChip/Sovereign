@@ -16,12 +16,12 @@ import { useDocument } from "@/hooks/useDocument"
 import { createDocument, listDocuments } from "@/lib/db/operations"
 import { PresenceAvatars } from "@/components/collaboration/PresenceAvatars"
 import { ConnectionStatus } from "@/components/collaboration/ConnectionStatus"
-import { ModelDownloadProgress } from "@/components/ai/ModelDownloadProgress"
-import { AVAILABLE_LLM_MODELS } from "@/lib/ai/llm-client"
+import { ChatPanel } from "@/components/ai/ChatPanel"
 
 import {
   Compass,
   FileText,
+  Sparkles,
   Network,
   PanelRightClose,
   PanelRightOpen,
@@ -93,12 +93,13 @@ export function WorkspaceLayout() {
     toggleSidebar,
     rightPanelOpen,
     toggleRightPanel,
+    setRightPanelOpen,
     rightPanelView,
     setRightPanelView,
     searchQuery,
   } = useUIStore()
 
-  const { username, userColor, selectedModel, setSelectedModel } = useSettingsStore()
+  const { username, userColor } = useSettingsStore()
 
   const {
     document: activeDoc,
@@ -182,6 +183,20 @@ export function WorkspaceLayout() {
             <HardDrive className="w-3 h-3" />
             <span>IndexedDB + OPFS</span>
           </Badge>
+
+          <Button
+            variant={rightPanelOpen && rightPanelView === "ai" ? "default" : "ghost"}
+            size="sm"
+            className="h-8 text-xs font-mono gap-1.5 text-muted-foreground hover:text-brass"
+            onClick={() => {
+              setRightPanelView("ai")
+              if (!rightPanelOpen) setRightPanelOpen(true)
+            }}
+            title="Open RAG AI Co-Pilot"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-brass" />
+            <span className="hidden md:inline">AI Co-Pilot</span>
+          </Button>
 
           <Button
             variant="ghost"
@@ -321,61 +336,35 @@ export function WorkspaceLayout() {
             </div>
 
             {/* Panel Content Area */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-4 font-sans">
-              {rightPanelView === "graph" ? (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="font-semibold text-brass uppercase">Knowledge Graph</span>
-                    <Badge variant="outline" className="text-[9px]">
-                      v0.5
-                    </Badge>
-                  </div>
+            {rightPanelView === "graph" ? (
+              <div className="flex-1 p-4 overflow-y-auto space-y-4 font-sans">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="font-semibold text-brass uppercase">Knowledge Graph</span>
+                  <Badge variant="outline" className="text-[9px]">
+                    v0.5
+                  </Badge>
+                </div>
 
-                  <KnowledgeGraph
-                    activeDocumentId={activeDocumentId}
-                    onSelectDocument={setActiveDocumentId}
-                    searchQuery={searchQuery}
-                    height="280px"
+                <KnowledgeGraph
+                  activeDocumentId={activeDocumentId}
+                  onSelectDocument={setActiveDocumentId}
+                  searchQuery={searchQuery}
+                  height="280px"
+                />
+
+                {activeDoc && (
+                  <BacklinkPanel
+                    documentId={activeDoc.id}
+                    documentTitle={activeDoc.title}
+                    onNavigate={setActiveDocumentId}
                   />
-
-                  {activeDoc && (
-                    <BacklinkPanel
-                      documentId={activeDoc.id}
-                      documentTitle={activeDoc.title}
-                      onNavigate={setActiveDocumentId}
-                    />
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="font-semibold text-brass uppercase">WebGPU AI Engine</span>
-                    <Badge variant="outline" className="text-[9px]">
-                      v0.7.0
-                    </Badge>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-[11px] font-mono text-muted-foreground block">
-                      Select On-Device LLM:
-                    </label>
-                    <select
-                      value={selectedModel}
-                      onChange={(e) => setSelectedModel(e.target.value)}
-                      className="w-full bg-secondary/40 border border-slate-line rounded-sm p-2 text-xs font-mono text-parchment focus:outline-none focus:border-brass"
-                    >
-                      {AVAILABLE_LLM_MODELS.map((m) => (
-                        <option key={m.id} value={m.id} className="bg-ink text-parchment">
-                          {m.name} ({m.size})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <ModelDownloadProgress key={selectedModel} modelId={selectedModel} />
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <ChatPanel onNavigateDoc={setActiveDocumentId} />
+              </div>
+            )}
 
             {/* Panel Bottom Privacy Note */}
             <div className="p-3 border-t border-slate-line text-[10px] text-muted-foreground text-center flex items-center justify-center gap-1 font-mono">

@@ -1,3 +1,4 @@
+import { detectWebGPU } from "./webgpu-detect"
 import {
   CreateWebWorkerMLCEngine,
   type WebWorkerMLCEngine,
@@ -106,6 +107,15 @@ class LLMClient {
 
     if (this.status === "downloading" || this.status === "compiling") {
       return
+    }
+
+    // Check WebGPU capabilities prior to model download/worker spawn
+    const caps = await detectWebGPU()
+    if (!caps.supported) {
+      const errorMsg = caps.error || "WebGPU acceleration is not supported on this device/browser."
+      this.setProgress("Unsupported", 0, errorMsg)
+      this.setStatus("error", errorMsg)
+      throw new Error(errorMsg)
     }
 
     this.setStatus("downloading")
