@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator"
 import { Editor } from "@/components/editor/Editor"
 import { KnowledgeGraph } from "@/components/graph/KnowledgeGraph"
 import { BacklinkPanel } from "@/components/editor/BacklinkPanel"
+import { CommandPalette } from "@/components/search/CommandPalette"
 
 import { Sidebar } from "./Sidebar"
 import { useDocumentStore } from "@/stores/document-store"
@@ -377,6 +378,8 @@ export function WorkspaceLayout() {
           </aside>
         )}
       </div>
+
+      <CommandPalette />
     </div>
   )
 }

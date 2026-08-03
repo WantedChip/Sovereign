@@ -38,3 +38,14 @@ export interface BacklinkWithContext {
   targetId: string | null
   snippet: string
 }
+
+export interface SearchResult {
+  id: string
+  documentId: string
+  title: string
+  chunkText: string
+  heading: string
+  score: number
+  chunkIndex: number
+  updatedAt?: number
+}

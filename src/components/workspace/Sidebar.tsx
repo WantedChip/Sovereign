@@ -18,7 +18,7 @@ export function Sidebar({
   isOpen = true,
   onToggleOpen,
 }: SidebarProps) {
-  const { searchQuery, setSearchQuery } = useUIStore()
+  const { searchQuery, setSearchQuery, setCommandPaletteOpen } = useUIStore()
 
   if (!isOpen) {
     return (
@@ -83,16 +83,23 @@ export function Sidebar({
           <span>New Document</span>
         </Button>
 
-        {/* Search Input */}
-        <div className="relative">
-          <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-muted-foreground" />
+        {/* Search Input with Command Palette Trigger */}
+        <div className="relative flex items-center">
+          <Search className="w-3.5 h-3.5 absolute left-2.5 text-muted-foreground" />
           <input
             type="text"
             placeholder="Filter documents..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-secondary/30 border border-slate-line text-parchment placeholder:text-muted-foreground text-xs pl-8 pr-3 py-1.5 rounded-sm focus:outline-none focus:border-brass/60 font-mono transition-colors"
+            className="w-full bg-secondary/30 border border-slate-line text-parchment placeholder:text-muted-foreground text-xs pl-8 pr-12 py-1.5 rounded-sm focus:outline-none focus:border-brass/60 font-mono transition-colors"
           />
+          <button
+            onClick={() => setCommandPaletteOpen(true)}
+            title="Open Command Palette (Cmd+K)"
+            className="absolute right-1.5 px-1 py-0.5 text-[9px] font-mono bg-slate-line/40 hover:bg-brass/20 text-muted-foreground hover:text-brass border border-slate-line rounded transition-colors"
+          >
+            ⌘K
+          </button>
         </div>
       </div>
 
