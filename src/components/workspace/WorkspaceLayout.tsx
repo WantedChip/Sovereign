@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Editor } from "@/components/editor/Editor"
+import { KnowledgeGraph } from "@/components/graph/KnowledgeGraph"
 import { BacklinkPanel } from "@/components/editor/BacklinkPanel"
+
 import { Sidebar } from "./Sidebar"
 import { useDocumentStore } from "@/stores/document-store"
 import { useUIStore } from "@/stores/ui-store"
@@ -326,17 +328,11 @@ export function WorkspaceLayout() {
                     </Badge>
                   </div>
 
-                  <div className="survey-card p-6 rounded-sm border-slate-line text-center space-y-3">
-                    <div className="w-10 h-10 rounded-sm bg-brass/10 border border-brass flex items-center justify-center mx-auto">
-                      <Network className="w-5 h-5 text-brass" />
-                    </div>
-                    <div className="text-xs font-mono font-semibold text-parchment">
-                      Cytoscape.js Chart
-                    </div>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      Interactive 2D knowledge graph visualization arrives in sub-phase v0.5.2.
-                    </p>
-                  </div>
+                  <KnowledgeGraph
+                    activeDocumentId={activeDocumentId}
+                    onSelectDocument={setActiveDocumentId}
+                    height="280px"
+                  />
 
                   {activeDoc && (
                     <BacklinkPanel
