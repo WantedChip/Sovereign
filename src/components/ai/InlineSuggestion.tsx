@@ -56,6 +56,44 @@ export const InlineSuggestionExtension = Extension.create({
       "Ctrl-Shift-r": () => {
         return triggerRephrase(this.editor)
       },
+      "Mod-Shift-Enter": () => {
+        const state = inlineSuggestionPluginKey.getState(this.editor.state)
+        if (state?.active && state.suggestedText) {
+          acceptSuggestion(this.editor, state)
+          return true
+        }
+        return false
+      },
+      "Ctrl-Shift-Enter": () => {
+        const state = inlineSuggestionPluginKey.getState(this.editor.state)
+        if (state?.active && state.suggestedText) {
+          acceptSuggestion(this.editor, state)
+          return true
+        }
+        return false
+      },
+      "Mod-Shift-Backspace": () => {
+        const state = inlineSuggestionPluginKey.getState(this.editor.state)
+        if (state?.active) {
+          rejectSuggestion(this.editor)
+          return true
+        }
+        return false
+      },
+      "Ctrl-Shift-Backspace": () => {
+        const state = inlineSuggestionPluginKey.getState(this.editor.state)
+        if (state?.active) {
+          rejectSuggestion(this.editor)
+          return true
+        }
+        return false
+      },
+      "Mod-Shift-g": () => {
+        return regenerateSuggestion(this.editor)
+      },
+      "Ctrl-Shift-g": () => {
+        return regenerateSuggestion(this.editor)
+      },
       Tab: () => {
         const state = inlineSuggestionPluginKey.getState(this.editor.state)
         if (
@@ -80,6 +118,8 @@ export const InlineSuggestionExtension = Extension.create({
   },
 
   addProseMirrorPlugins() {
+    const editor = this.editor
+
     return [
       new Plugin<InlineSuggestionState>({
         key: inlineSuggestionPluginKey,
@@ -119,6 +159,52 @@ export const InlineSuggestionExtension = Extension.create({
 
             const decos: Decoration[] = []
 
+            const createActionButtons = () => {
+              const btnGroup = document.createElement("span")
+              btnGroup.className =
+                "inline-flex items-center gap-1 ml-1.5 select-auto pointer-events-auto"
+
+              const acceptBtn = document.createElement("button")
+              acceptBtn.type = "button"
+              acceptBtn.className =
+                "text-[10px] uppercase font-mono tracking-wider text-moss bg-moss/20 hover:bg-moss/30 border border-moss/40 px-1.5 py-0.5 rounded shadow-xs cursor-pointer transition-colors"
+              acceptBtn.textContent = "✓ Accept"
+              acceptBtn.onmousedown = (e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                const current = inlineSuggestionPluginKey.getState(editor.state)
+                if (current) acceptSuggestion(editor, current)
+              }
+
+              const rejectBtn = document.createElement("button")
+              rejectBtn.type = "button"
+              rejectBtn.className =
+                "text-[10px] uppercase font-mono tracking-wider text-parchment/80 bg-oxblood/20 hover:bg-oxblood/30 border border-oxblood/40 px-1.5 py-0.5 rounded shadow-xs cursor-pointer transition-colors"
+              rejectBtn.textContent = "✗ Reject"
+              rejectBtn.onmousedown = (e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                rejectSuggestion(editor)
+              }
+
+              const regenBtn = document.createElement("button")
+              regenBtn.type = "button"
+              regenBtn.className =
+                "text-[10px] uppercase font-mono tracking-wider text-brass bg-brass/10 hover:bg-brass/20 border border-brass/30 px-1.5 py-0.5 rounded shadow-xs cursor-pointer transition-colors"
+              regenBtn.textContent = "↻"
+              regenBtn.title = "Regenerate (Ctrl+Shift+G)"
+              regenBtn.onmousedown = (e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                regenerateSuggestion(editor)
+              }
+
+              btnGroup.appendChild(acceptBtn)
+              btnGroup.appendChild(rejectBtn)
+              btnGroup.appendChild(regenBtn)
+              return btnGroup
+            }
+
             if (pluginState.type === "continue") {
               const widgetEl = document.createElement("span")
               widgetEl.className =
@@ -136,18 +222,12 @@ export const InlineSuggestionExtension = Extension.create({
                   "ghost-text-content text-brass/80 italic bg-brass/10 border-b border-dashed border-brass/50 px-1 rounded-xs font-serif"
                 textSpan.textContent = pluginState.suggestedText
 
-                const badgeSpan = document.createElement("span")
-                badgeSpan.className =
-                  "ghost-text-badge text-[10px] uppercase font-mono tracking-wider text-parchment/70 bg-ink/90 border border-slate-line px-1.5 py-0.5 rounded shadow-xs ml-1"
-                badgeSpan.textContent = "Tab ↵ Accept • Esc ✕ Reject"
-
                 widgetEl.appendChild(textSpan)
-                widgetEl.appendChild(badgeSpan)
+                widgetEl.appendChild(createActionButtons())
               }
 
               decos.push(Decoration.widget(pluginState.from, widgetEl, { side: 1 }))
             } else if (pluginState.type === "rephrase") {
-              // Highlight original selected text
               if (pluginState.from < pluginState.to) {
                 decos.push(
                   Decoration.inline(pluginState.from, pluginState.to, {
@@ -173,13 +253,8 @@ export const InlineSuggestionExtension = Extension.create({
                   "rephrase-content text-moss font-medium bg-moss/15 border border-moss/40 px-1.5 py-0.5 rounded-xs font-serif shadow-xs"
                 textSpan.textContent = `➜ ${pluginState.suggestedText}`
 
-                const badgeSpan = document.createElement("span")
-                badgeSpan.className =
-                  "ghost-text-badge text-[10px] uppercase font-mono tracking-wider text-parchment/70 bg-ink/90 border border-slate-line px-1.5 py-0.5 rounded shadow-xs ml-1"
-                badgeSpan.textContent = "Tab ↵ Accept • Esc ✕ Reject"
-
                 widgetEl.appendChild(textSpan)
-                widgetEl.appendChild(badgeSpan)
+                widgetEl.appendChild(createActionButtons())
               }
 
               decos.push(Decoration.widget(pluginState.to, widgetEl, { side: 1 }))
@@ -425,4 +500,22 @@ function rejectSuggestion(editor: Editor) {
       type: "clear",
     })
   )
+}
+
+function regenerateSuggestion(editor: Editor): boolean {
+  const state = inlineSuggestionPluginKey.getState(editor.state)
+  if (!state?.active) return false
+
+  const { type, from, to } = state
+  rejectSuggestion(editor)
+
+  if (type === "continue") {
+    editor.commands.setTextSelection(from)
+    return triggerContinuation(editor)
+  } else if (type === "rephrase") {
+    editor.commands.setTextSelection({ from, to })
+    return triggerRephrase(editor)
+  }
+
+  return false
 }
