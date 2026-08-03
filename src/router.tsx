@@ -1,6 +1,13 @@
+import { lazy, Suspense } from "react"
 import { createBrowserRouter, Navigate } from "react-router"
 import { LandingPage } from "@/pages/LandingPage"
-import { WorkspacePage } from "@/pages/WorkspacePage"
+import { WorkspaceSkeleton } from "@/components/workspace/WorkspaceSkeleton"
+
+const WorkspacePage = lazy(() =>
+  import("@/pages/WorkspacePage").then((module) => ({
+    default: module.WorkspacePage,
+  }))
+)
 
 export const router = createBrowserRouter([
   {
@@ -9,7 +16,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/app",
-    element: <WorkspacePage />,
+    element: (
+      <Suspense fallback={<WorkspaceSkeleton />}>
+        <WorkspacePage />
+      </Suspense>
+    ),
   },
   {
     path: "*",

@@ -59,12 +59,17 @@ export function Sidebar({
 
   if (!isOpen) {
     return (
-      <div className="bg-ink border-r border-slate-line flex flex-col items-center py-3 px-1.5 shrink-0 z-10">
+      <aside
+        role="navigation"
+        aria-label="Collapsed Sidebar Navigation"
+        className="bg-ink border-r border-slate-line flex flex-col items-center py-3 px-1.5 shrink-0 z-10 h-full"
+      >
         <Button
           size="icon"
           variant="ghost"
-          className="h-8 w-8 text-muted-foreground hover:text-brass"
+          className="h-9 w-9 text-muted-foreground hover:text-brass min-h-[44px] min-w-[44px]"
           onClick={onToggleOpen}
+          aria-label="Expand Sidebar Navigation"
           title="Expand Sidebar"
         >
           <PanelLeftOpen className="w-4 h-4" />
@@ -72,8 +77,9 @@ export function Sidebar({
         <Button
           size="icon"
           variant="stamp"
-          className="h-8 w-8 mt-3 text-brass"
+          className="h-9 w-9 mt-3 text-brass min-h-[44px] min-w-[44px]"
           onClick={onCreateDocument}
+          aria-label="Create New Document"
           title="New Note"
         >
           <Plus className="w-4 h-4" />
@@ -81,8 +87,9 @@ export function Sidebar({
         <Button
           size="icon"
           variant="ghost"
-          className="h-8 w-8 mt-2 text-muted-foreground hover:text-brass"
+          className="h-9 w-9 mt-2 text-muted-foreground hover:text-brass min-h-[44px] min-w-[44px]"
           onClick={handleExport}
+          aria-label="Export Knowledge Base as Markdown ZIP Archive"
           title="Export Knowledge Base as Markdown ZIP"
           disabled={isExporting}
         >
@@ -95,20 +102,25 @@ export function Sidebar({
         <Button
           size="icon"
           variant="ghost"
-          className="h-8 w-8 mt-2 text-muted-foreground hover:text-brass"
+          className="h-9 w-9 mt-2 text-muted-foreground hover:text-brass min-h-[44px] min-w-[44px]"
           onClick={() => setIsImportOpen(true)}
+          aria-label="Import Markdown ZIP Archive into Knowledge Base"
           title="Import Knowledge Base ZIP"
         >
           <Upload className="w-4 h-4" />
         </Button>
 
         <ImportDialog isOpen={isImportOpen} onClose={() => setIsImportOpen(false)} />
-      </div>
+      </aside>
     )
   }
 
   return (
-    <aside className="w-64 md:w-72 bg-ink border-r border-slate-line flex flex-col shrink-0 overflow-hidden font-sans">
+    <aside
+      role="navigation"
+      aria-label="Document Sidebar Navigation"
+      className="w-64 md:w-72 bg-ink border-r border-slate-line flex flex-col shrink-0 overflow-hidden font-sans h-full"
+    >
       {/* Sidebar Header */}
       <div className="p-3 border-b border-slate-line space-y-3">
         <div className="flex items-center justify-between">
@@ -125,8 +137,9 @@ export function Sidebar({
             <Button
               size="icon"
               variant="ghost"
-              className="h-6 w-6 text-muted-foreground hover:text-parchment"
+              className="h-8 w-8 text-muted-foreground hover:text-parchment min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0"
               onClick={onToggleOpen}
+              aria-label="Collapse Sidebar Navigation"
               title="Collapse Sidebar"
             >
               <PanelLeftClose className="w-3.5 h-3.5" />
@@ -138,8 +151,9 @@ export function Sidebar({
         <Button
           size="sm"
           variant="stamp"
-          className="w-full h-8 text-xs gap-1.5 font-mono shadow-sm"
+          className="w-full h-8 text-xs gap-1.5 font-mono shadow-sm min-h-[44px] sm:min-h-0"
           onClick={onCreateDocument}
+          aria-label="Create New Document"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>New Document</span>
@@ -153,10 +167,12 @@ export function Sidebar({
             placeholder="Filter documents..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-secondary/30 border border-slate-line text-parchment placeholder:text-muted-foreground text-xs pl-8 pr-12 py-1.5 rounded-sm focus:outline-none focus:border-brass/60 font-mono transition-colors"
+            aria-label="Filter documents by title"
+            className="w-full bg-secondary/30 border border-slate-line text-parchment placeholder:text-muted-foreground text-xs pl-8 pr-12 py-1.5 rounded-sm focus:outline-none focus:border-brass/60 font-mono transition-colors min-h-[44px] sm:min-h-0"
           />
           <button
             onClick={() => setCommandPaletteOpen(true)}
+            aria-label="Open Command Palette Search Modal (Command K)"
             title="Open Command Palette (Cmd+K)"
             className="absolute right-1.5 px-1 py-0.5 text-[9px] font-mono bg-slate-line/40 hover:bg-brass/20 text-muted-foreground hover:text-brass border border-slate-line rounded transition-colors"
           >
@@ -188,7 +204,8 @@ export function Sidebar({
             size="sm"
             onClick={handleExport}
             disabled={isExporting}
-            className="h-7 text-[10px] font-mono gap-1 border-slate-line hover:border-brass/50 bg-ink/60 hover:bg-brass/10 text-parchment transition-colors px-2"
+            aria-label="Export Knowledge Base as ZIP"
+            className="h-8 text-[10px] font-mono gap-1 border-slate-line hover:border-brass/50 bg-ink/60 hover:bg-brass/10 text-parchment transition-colors px-2 min-h-[44px] sm:min-h-0"
             title="Export Knowledge Base as structured Markdown ZIP archive"
           >
             {isExporting ? (
@@ -203,7 +220,8 @@ export function Sidebar({
             variant="outline"
             size="sm"
             onClick={() => setIsImportOpen(true)}
-            className="h-7 text-[10px] font-mono gap-1 border-slate-line hover:border-brass/50 bg-ink/60 hover:bg-brass/10 text-parchment transition-colors px-2"
+            aria-label="Import Knowledge Base ZIP"
+            className="h-8 text-[10px] font-mono gap-1 border-slate-line hover:border-brass/50 bg-ink/60 hover:bg-brass/10 text-parchment transition-colors px-2 min-h-[44px] sm:min-h-0"
             title="Import Markdown ZIP archive into Knowledge Base"
           >
             <Upload className="w-3 h-3 text-brass shrink-0" />

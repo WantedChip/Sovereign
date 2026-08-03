@@ -1,6 +1,7 @@
 import type { JSONContent } from "@tiptap/react"
 import { db } from "./schema"
 import { opfsClient } from "@/lib/storage/opfs-client"
+import { errorHandler } from "@/lib/error-handler"
 import {
   updateDocumentLinks,
   resolveLinksForDocument,
@@ -54,8 +55,13 @@ export async function createDocument(
     wordCount,
   }
 
-  await db.documents.put(docRecord)
-  await opfsClient.writeDocumentContent(id, docContent)
+  try {
+    await db.documents.put(docRecord)
+    await opfsClient.writeDocumentContent(id, docContent)
+  } catch (err) {
+    errorHandler.handleStorageError(err)
+    throw err
+  }
 
   await updateDocumentLinks(id, docContent)
   await resolveLinksForDocument(id, docTitle)

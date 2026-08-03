@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://huggingface.co https://cdn-lfs.huggingface.co wss://signaling.yjs.dev wss://*.glitch.me blob: data:; worker-src 'self' blob:; child-src 'self' blob:; frame-ancestors 'none'; frame-src 'none';"
+    />
     <title>Sovereign — Local-First Collaborative Knowledge Workspace</title>
 
     <!-- PWA Manifest & Meta Tags -->
@@ -26,6 +30,12 @@
   <body
     class="bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary min-h-screen"
   >
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-brass focus:text-ink focus:font-mono focus:text-xs focus:rounded-sm focus:outline-none focus:ring-2 focus:ring-brass"
+    >
+      Skip to main content
+    </a>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -1,5 +1,6 @@
 import type * as Y from "yjs"
 import { WebrtcProvider } from "y-webrtc"
+import { errorHandler } from "@/lib/error-handler"
 
 export interface WebRTCStatus {
   connected: boolean
@@ -10,7 +11,7 @@ export interface WebRTCStatus {
 }
 
 /**
- * Creates and configures a WebRTC provider for peer-to-peer document synchronization.
+ * Creates and configures a WebRTC provider for peer-to-peer document synchronization with auto-reconnect backoff.
  *
  * @param documentId Unique identifier for the document. Room name will be `sovereign-${documentId}`.
  * @param ydoc The Y.Doc instance to synchronize.
@@ -40,12 +41,43 @@ export function createWebRTCProvider(
     bcPeers: [],
   }
 
+  let reconnectAttempts = 0
+  let reconnectTimer: ReturnType<typeof setTimeout> | null = null
+
   const notifyStatus = () => {
     onStatusChange?.({ ...statusState })
   }
 
+  const scheduleReconnectWithBackoff = () => {
+    if (reconnectTimer) clearTimeout(reconnectTimer)
+
+    // Exponential backoff: 1s, 2s, 4s, 8s, 16s, max 30s
+    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000)
+    reconnectAttempts++
+
+    console.warn(
+      `[WebRTC] Disconnected. Scheduling reconnect attempt ${reconnectAttempts} in ${delay}ms...`
+    )
+
+    reconnectTimer = setTimeout(() => {
+      if (!provider.connected) {
+        try {
+          provider.connect()
+        } catch (err) {
+          errorHandler.handleNetworkError(err)
+        }
+      }
+    }, delay)
+  }
+
   provider.on("status", ({ connected }: { connected: boolean }) => {
     statusState.connected = connected
+    if (connected) {
+      reconnectAttempts = 0
+      if (reconnectTimer) clearTimeout(reconnectTimer)
+    } else {
+      scheduleReconnectWithBackoff()
+    }
     notifyStatus()
   })
 
@@ -72,6 +104,12 @@ export function createWebRTCProvider(
       notifyStatus()
     }
   )
+
+  const originalDestroy = provider.destroy.bind(provider)
+  provider.destroy = () => {
+    if (reconnectTimer) clearTimeout(reconnectTimer)
+    originalDestroy()
+  }
 
   return provider
 }

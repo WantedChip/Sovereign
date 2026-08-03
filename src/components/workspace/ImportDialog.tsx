@@ -103,19 +103,28 @@ export const ImportDialog: FC<ImportDialogProps> = ({ isOpen, onClose, onSuccess
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/80 backdrop-blur-xs font-sans animate-fade-in">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="import-dialog-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/80 backdrop-blur-xs font-sans animate-fade-in"
+    >
       <div className="w-full max-w-lg bg-card border border-slate-line rounded-sm shadow-xl p-6 relative text-parchment space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-line pb-3">
           <div className="flex items-center gap-2">
             <FileArchive className="w-5 h-5 text-brass" />
-            <h2 className="text-base font-serif font-semibold tracking-wide text-parchment">
+            <h2
+              id="import-dialog-title"
+              className="text-base font-serif font-semibold tracking-wide text-parchment"
+            >
               Import Knowledge Base ZIP
             </h2>
           </div>
           <button
             onClick={resetDialog}
             disabled={isImporting}
+            aria-label="Close Import Modal"
             className="text-muted-foreground hover:text-parchment transition-colors p-1 rounded-sm cursor-pointer"
           >
             <X className="w-4 h-4" />

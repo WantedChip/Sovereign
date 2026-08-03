@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect, useMemo, type KeyboardEvent } from "react"
+import { useState, useRef, useEffect, useMemo, lazy, Suspense, type KeyboardEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useChatStore, type ChatMessage } from "@/stores/chat-store"
 import { useAI } from "@/hooks/useAI"
 import { useSettingsStore } from "@/stores/settings-store"
-import { ModelDownloadProgress } from "./ModelDownloadProgress"
 import { WebGPUBanner } from "./WebGPUBanner"
 import { AVAILABLE_LLM_MODELS } from "@/lib/ai/llm-client"
 import { listDocuments } from "@/lib/db/operations"
@@ -21,6 +21,11 @@ import {
   Bot,
   AlertCircle,
 } from "lucide-react"
+
+// Lazy load ModelDownloadProgress for code splitting
+const ModelDownloadProgress = lazy(() =>
+  import("./ModelDownloadProgress").then((m) => ({ default: m.ModelDownloadProgress }))
+)
 
 interface ChatPanelProps {
   onNavigateDoc?: (documentId: string) => void
@@ -167,7 +172,9 @@ export function ChatPanel({ onNavigateDoc }: ChatPanelProps) {
       {/* Model Download Progress Widget if not ready */}
       {llmStatus !== "ready" && (
         <div className="p-3 border-b border-slate-line bg-secondary/30 shrink-0">
-          <ModelDownloadProgress modelId={selectedModel} />
+          <Suspense fallback={<Skeleton className="h-16 w-full bg-slate-line/40" />}>
+            <ModelDownloadProgress modelId={selectedModel} />
+          </Suspense>
         </div>
       )}
 

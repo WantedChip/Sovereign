@@ -80,6 +80,9 @@ export function CommandPalette() {
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Search and Command Palette"
       className="fixed inset-0 z-50 bg-ink/85 backdrop-blur-md flex items-start justify-center pt-[12vh] p-4 animate-in fade-in duration-150"
       onClick={() => setCommandPaletteOpen(false)}
     >
