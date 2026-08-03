@@ -30,7 +30,28 @@ Sovereign takes the opposite bet: **everything runs on your hardware.** Your doc
 
 ## Screenshots
 
-<!-- TODO: add screenshot/GIF of the editor + knowledge graph -->
+<table>
+  <tr>
+    <td width="50%">
+      <img src="screenshots/landing_page.png" alt="Sovereign landing page hero"/>
+      <br/><sub align="center">Landing — Field Survey visual system</sub>
+    </td>
+    <td width="50%">
+      <img src="screenshots/workspace.png" alt="Sovereign workspace: editor, knowledge graph, backlinks"/>
+      <br/><sub>Workspace — editor, live knowledge graph, backlinks</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="screenshots/privacy_page.png" alt="Sovereign capabilities section"/>
+      <br/><sub>Capabilities — privacy, speed, and autonomy</sub>
+    </td>
+    <td width="50%">
+      <img src="screenshots/zero_server_architecture.png" alt="Zero-server architecture diagram"/>
+      <br/><sub>Architecture — zero-server client topology</sub>
+    </td>
+  </tr>
+</table>
 
 ## Features
 
@@ -55,10 +76,10 @@ Sovereign takes the opposite bet: **everything runs on your hardware.** Your doc
 No backend. Every subsystem below runs client-side, in your browser:
 
 ```
-                         ┌──────────────────────────┐
+                         ┌─────────────────────────┐
                          │      Browser Client      │
                          └────────────┬─────────────┘
-          ┌──────────────┬────────────┼─────────────┬──────────────┐
+          ┌──────────────┬────────────┼────────────┬──────────────┐
           │              │            │             │              │
     ┌─────▼─────┐  ┌─────▼─────┐ ┌────▼────┐  ┌─────▼─────┐  ┌─────▼─────┐
     │  Tiptap   │  │    Yjs    │ │  OPFS   │  │  WebGPU   │  │ Cytoscape │
