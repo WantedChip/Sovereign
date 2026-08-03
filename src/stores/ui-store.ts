@@ -6,6 +6,7 @@ interface UIState {
   rightPanelOpen: boolean
   rightPanelView: "graph" | "ai" | "none"
   commandPaletteOpen: boolean
+  searchQuery: string
   toggleSidebar: () => void
   setSidebarOpen: (open: boolean) => void
   setSidebarWidth: (width: number) => void
@@ -14,6 +15,7 @@ interface UIState {
   setRightPanelView: (view: "graph" | "ai" | "none") => void
   toggleCommandPalette: () => void
   setCommandPaletteOpen: (open: boolean) => void
+  setSearchQuery: (query: string) => void
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -22,6 +24,7 @@ export const useUIStore = create<UIState>((set) => ({
   rightPanelOpen: true,
   rightPanelView: "graph",
   commandPaletteOpen: false,
+  searchQuery: "",
   toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
   setSidebarWidth: (width) => set({ sidebarWidth: width }),
@@ -30,4 +33,5 @@ export const useUIStore = create<UIState>((set) => ({
   setRightPanelView: (view) => set({ rightPanelView: view }),
   toggleCommandPalette: () => set((state) => ({ commandPaletteOpen: !state.commandPaletteOpen })),
   setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
+  setSearchQuery: (query) => set({ searchQuery: query }),
 }))

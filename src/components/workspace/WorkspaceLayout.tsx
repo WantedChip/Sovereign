@@ -93,6 +93,7 @@ export function WorkspaceLayout() {
     toggleRightPanel,
     rightPanelView,
     setRightPanelView,
+    searchQuery,
   } = useUIStore()
 
   const { username, userColor } = useSettingsStore()
@@ -331,6 +332,7 @@ export function WorkspaceLayout() {
                   <KnowledgeGraph
                     activeDocumentId={activeDocumentId}
                     onSelectDocument={setActiveDocumentId}
+                    searchQuery={searchQuery}
                     height="280px"
                   />
 

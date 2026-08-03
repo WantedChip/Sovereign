@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useUIStore } from "@/stores/ui-store"
 import { Button } from "@/components/ui/button"
 import { DocumentList } from "./DocumentList"
 import { Plus, Search, PanelLeftClose, PanelLeftOpen, Compass, HardDrive } from "lucide-react"
@@ -18,7 +18,7 @@ export function Sidebar({
   isOpen = true,
   onToggleOpen,
 }: SidebarProps) {
-  const [searchQuery, setSearchQuery] = useState("")
+  const { searchQuery, setSearchQuery } = useUIStore()
 
   if (!isOpen) {
     return (

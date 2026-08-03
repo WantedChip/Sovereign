@@ -1,11 +1,11 @@
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { useLiveQuery } from "dexie-react-hooks"
-import cytoscape, { type Core } from "cytoscape"
+import cytoscape, { type Core, type NodeSingular, type EdgeSingular } from "cytoscape"
 import fcose from "cytoscape-fcose"
 import { db } from "@/lib/db/schema"
 import { createFromLink } from "@/lib/db/operations"
-import { Button } from "@/components/ui/button"
-import { Maximize2, ZoomIn, ZoomOut, RotateCcw, Network } from "lucide-react"
+import { GraphControls } from "./GraphControls"
+import { GraphTooltip, type TooltipData } from "./GraphTooltip"
 
 // Register fcose layout with Cytoscape
 try {
@@ -17,16 +17,19 @@ try {
 export interface KnowledgeGraphProps {
   activeDocumentId: string | null
   onSelectDocument: (id: string) => void
+  searchQuery?: string
   height?: string
 }
 
 export function KnowledgeGraph({
   activeDocumentId,
   onSelectDocument,
+  searchQuery,
   height = "100%",
 }: KnowledgeGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const cyRef = useRef<Core | null>(null)
+  const [tooltipData, setTooltipData] = useState<TooltipData | null>(null)
 
   const documents = useLiveQuery(() => db.documents.toArray(), [])
   const links = useLiveQuery(() => db.links.toArray(), [])
@@ -36,9 +39,15 @@ export function KnowledgeGraph({
     if (!containerRef.current) return
 
     const degreeMap = new Map<string, number>()
+    const docMetaMap = new Map<string, { wordCount: number; updatedAt: Date }>()
+
     if (documents) {
-      for (const doc of documents) degreeMap.set(doc.id, 0)
+      for (const doc of documents) {
+        degreeMap.set(doc.id, 0)
+        docMetaMap.set(doc.id, { wordCount: doc.wordCount, updatedAt: doc.updatedAt })
+      }
     }
+
     if (links) {
       for (const link of links) {
         degreeMap.set(link.sourceId, (degreeMap.get(link.sourceId) ?? 0) + 1)
@@ -124,6 +133,8 @@ export function KnowledgeGraph({
               "text-margin-y": 4,
               width: "mapData(degree, 0, 10, 24, 48)",
               height: "mapData(degree, 0, 10, 24, 48)",
+              "transition-property": "opacity, background-color, border-color",
+              "transition-duration": 0.15,
             },
           },
           {
@@ -158,6 +169,24 @@ export function KnowledgeGraph({
               "target-arrow-shape": "triangle",
               "curve-style": "bezier",
               opacity: 0.7,
+              "transition-property": "opacity, line-color",
+              "transition-duration": 0.15,
+            },
+          },
+          {
+            selector: ".dimmed",
+            style: {
+              opacity: 0.15,
+            },
+          },
+          {
+            selector: ".search-highlight",
+            style: {
+              "border-color": "#C9A227",
+              "border-width": 3,
+              color: "#C9A227",
+              "font-weight": "bold",
+              opacity: 1,
             },
           },
         ],
@@ -169,9 +198,9 @@ export function KnowledgeGraph({
         } as unknown as cytoscape.LayoutOptions,
       })
 
-      // Node click handler
+      // Single tap node handler -> navigate
       cyRef.current.on("tap", "node", async (evt) => {
-        const node = evt.target
+        const node = evt.target as NodeSingular
         const isUnresolved = node.data("isUnresolved") === "true"
 
         if (isUnresolved) {
@@ -187,8 +216,74 @@ export function KnowledgeGraph({
           }
         }
       })
+
+      // Double tap node handler -> center & zoom
+      cyRef.current.on("dbltap", "node", (evt) => {
+        const node = evt.target as NodeSingular
+        cyRef.current?.animate(
+          {
+            center: { eles: node },
+            zoom: 1.5,
+          },
+          {
+            duration: 300,
+          }
+        )
+      })
+
+      // Tap edge handler -> highlight connected nodes & edge
+      cyRef.current.on("tap", "edge", (evt) => {
+        const edge = evt.target as EdgeSingular
+        const connected = edge.connectedNodes()
+        if (!cyRef.current) return
+
+        cyRef.current.elements().addClass("dimmed")
+        edge.removeClass("dimmed")
+        connected.removeClass("dimmed")
+      })
+
+      // Background tap -> clear dimming
+      cyRef.current.on("tap", (evt) => {
+        const cy = cyRef.current
+        if (cy && evt.target === cy) {
+          cy.elements().removeClass("dimmed")
+          setTooltipData(null)
+        }
+      })
+
+      // Hover node handler -> highlight neighborhood & show tooltip
+      cyRef.current.on("mouseover", "node", (evt) => {
+        const node = evt.target as NodeSingular
+        const isUnresolved = node.data("isUnresolved") === "true"
+        const meta = docMetaMap.get(node.id())
+        const renderedPos = node.renderedPosition()
+
+        setTooltipData({
+          title: node.data("label"),
+          wordCount: meta?.wordCount,
+          updatedAt: meta?.updatedAt,
+          degree: node.data("degree") || 0,
+          isUnresolved,
+          x: renderedPos.x,
+          y: renderedPos.y,
+        })
+
+        const neighborhood = node.closedNeighborhood()
+        if (cyRef.current) {
+          cyRef.current.elements().not(neighborhood).addClass("dimmed")
+          neighborhood.removeClass("dimmed")
+        }
+      })
+
+      // Mouseout node handler -> restore graph & hide tooltip
+      cyRef.current.on("mouseout", "node", () => {
+        setTooltipData(null)
+        if (cyRef.current) {
+          cyRef.current.elements().removeClass("dimmed")
+        }
+      })
     } else {
-      // Batch update elements and styling
+      // Batch update graph elements
       cyRef.current.json({ elements })
       cyRef.current
         .layout({
@@ -201,6 +296,30 @@ export function KnowledgeGraph({
         .run()
     }
   }, [documents, links, activeDocumentId, onSelectDocument])
+
+  // Search Query Highlighting effect
+  useEffect(() => {
+    if (!cyRef.current) return
+    const query = searchQuery?.trim().toLowerCase()
+
+    if (!query) {
+      cyRef.current.elements().removeClass("dimmed").removeClass("search-highlight")
+      return
+    }
+
+    cyRef.current.batch(() => {
+      if (!cyRef.current) return
+      cyRef.current.elements().addClass("dimmed").removeClass("search-highlight")
+
+      cyRef.current.nodes().each((node) => {
+        const label = (node.data("label") || "").toLowerCase()
+        if (label.includes(query)) {
+          node.removeClass("dimmed").addClass("search-highlight")
+          node.connectedEdges().removeClass("dimmed").addClass("search-highlight")
+        }
+      })
+    })
+  }, [searchQuery])
 
   const handleFit = useCallback(() => {
     cyRef.current?.fit(undefined, 20)
@@ -250,54 +369,18 @@ export function KnowledgeGraph({
       className="relative w-full rounded-sm border border-slate-line bg-ink/90 overflow-hidden flex flex-col select-none"
       style={{ height }}
     >
-      {/* Graph Controls Toolbar Overlay */}
-      <div className="absolute top-2 right-2 z-10 flex items-center gap-1 bg-ink/90 border border-slate-line/80 p-1 rounded-sm shadow-md font-mono">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-6 h-6 text-muted-foreground hover:text-brass"
-          onClick={handleFit}
-          title="Fit to View"
-        >
-          <Maximize2 className="w-3.5 h-3.5" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-6 h-6 text-muted-foreground hover:text-brass"
-          onClick={handleZoomIn}
-          title="Zoom In"
-        >
-          <ZoomIn className="w-3.5 h-3.5" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-6 h-6 text-muted-foreground hover:text-brass"
-          onClick={handleZoomOut}
-          title="Zoom Out"
-        >
-          <ZoomOut className="w-3.5 h-3.5" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-6 h-6 text-muted-foreground hover:text-brass"
-          onClick={handleResetLayout}
-          title="Reset Layout"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-        </Button>
-      </div>
+      {/* Graph Controls Overlay */}
+      <GraphControls
+        nodeCount={docCount}
+        edgeCount={linkCount}
+        onFit={handleFit}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onResetLayout={handleResetLayout}
+      />
 
-      {/* Graph Stats Badge Overlay */}
-      <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5 bg-ink/90 border border-slate-line/80 px-2 py-0.5 rounded-sm text-[10px] font-mono text-muted-foreground">
-        <Network className="w-3 h-3 text-brass" />
-        <span>
-          {docCount} {docCount === 1 ? "node" : "nodes"} • {linkCount}{" "}
-          {linkCount === 1 ? "edge" : "edges"}
-        </span>
-      </div>
+      {/* Floating Hover Tooltip */}
+      <GraphTooltip data={tooltipData} />
 
       {/* Cytoscape Canvas Container */}
       <div ref={containerRef} className="w-full flex-1 cursor-grab active:cursor-grabbing" />
