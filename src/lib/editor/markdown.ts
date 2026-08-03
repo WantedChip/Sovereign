@@ -32,6 +32,20 @@ turndownService.addRule("fencedCodeBlock", {
   },
 })
 
+// Custom Rule for Wiki Links ([[Title]])
+turndownService.addRule("wikiLink", {
+  filter: (node) => {
+    return (
+      node.nodeName === "SPAN" && (node as HTMLElement).getAttribute("data-type") === "wiki-link"
+    )
+  },
+  replacement: (_content, node) => {
+    const title = (node as HTMLElement).getAttribute("data-title") || node.textContent || ""
+    const cleanTitle = title.replace(/^\[\[|\]\]$/g, "").trim()
+    return `[[${cleanTitle}]]`
+  },
+})
+
 // Initialize markdown-it parser
 export const mdParser = markdownit({
   html: true,
@@ -49,11 +63,15 @@ export function toMarkdown(editor: Editor | null): string {
 }
 
 /**
- * Parses a Markdown string into HTML suitable for loading into Tiptap.
+ * Parses a Markdown string into HTML suitable for loading into Tiptap, converting [[Wiki Links]] to span nodes.
  */
 export function markdownToHtml(markdown: string): string {
   if (!markdown) return ""
-  return mdParser.render(markdown)
+  const processed = markdown.replace(/\[\[([^\]]+)\]\]/g, (_match, title) => {
+    const cleanTitle = title.trim()
+    return `<span data-type="wiki-link" data-title="${cleanTitle}">[[${cleanTitle}]]</span>`
+  })
+  return mdParser.render(processed)
 }
 
 /**

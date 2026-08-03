@@ -3,6 +3,7 @@ import { StarterKit } from "@tiptap/starter-kit"
 import { Placeholder } from "@tiptap/extensions"
 import { Toolbar } from "./Toolbar"
 import { SlashCommand } from "./SlashCommandExtension"
+import { WikiLinkNode } from "./WikiLink"
 
 interface EditorProps {
   content?: string
@@ -14,7 +15,7 @@ interface EditorProps {
 export function Editor({
   content = "",
   onChange,
-  placeholder = "Start typing your notes, or type '/' for slash commands...",
+  placeholder = "Start typing your notes, or type '/' for slash commands, '[[' for wiki links...",
   readOnly = false,
 }: EditorProps) {
   const editor = useEditor({
@@ -30,6 +31,7 @@ export function Editor({
         placeholder,
       }),
       SlashCommand,
+      WikiLinkNode,
     ],
     onUpdate: ({ editor }) => {
       onChange?.(editor.getHTML())
