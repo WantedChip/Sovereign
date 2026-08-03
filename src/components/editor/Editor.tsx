@@ -10,6 +10,7 @@ import { SlashCommand } from "./SlashCommandExtension"
 import { WikiLinkNode } from "./WikiLink"
 import { CollapsibleBlockNode } from "./CollapsibleBlock"
 import { CalloutBlockNode } from "./CalloutBlock"
+import { InlineSuggestionExtension } from "../ai/InlineSuggestion"
 
 export interface EditorUserPresence {
   name: string
@@ -58,6 +59,7 @@ export function Editor({
     WikiLinkNode,
     CollapsibleBlockNode,
     CalloutBlockNode,
+    InlineSuggestionExtension,
   ]
 
   if (xmlFragment) {

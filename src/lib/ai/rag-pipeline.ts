@@ -131,3 +131,25 @@ export async function* ragQuery(
 
   yield { type: "done", content: fullAnswer, sources: searchResults }
 }
+
+export interface InlineSuggestionOptions {
+  type: "continue" | "rephrase"
+  contextText: string
+  selectionText?: string
+  signal?: AbortSignal
+  onToken?: (token: string) => void
+}
+
+export async function generateInlineSuggestion(options: InlineSuggestionOptions): Promise<string> {
+  const llmStatus = llmClient.getStatus()
+  if (llmStatus !== "ready") {
+    throw new Error("AI model is not loaded. Load an AI model in the right panel first.")
+  }
+
+  const prompt =
+    options.type === "continue"
+      ? `You are an inline writing assistant. Continue writing the following text naturally, matching its style, tone, and vocabulary. Provide ONLY the continuation text (1-3 sentences max). Do NOT repeat the prompt, do NOT wrap in quotes, and do NOT add explanatory text.\n\nContext:\n${options.contextText}\n\nContinuation:`
+      : `You are an inline writing assistant. Rephrase the following selected text while preserving its meaning, style, and tone. Provide ONLY the rephrased text. Do NOT wrap in quotes, do NOT explain changes, and do NOT add intro/outro comments.\n\nText to rephrase:\n${options.selectionText || options.contextText}\n\nRephrased:`
+
+  return await llmClient.chatCompletion([{ role: "user", content: prompt }], options.onToken)
+}
