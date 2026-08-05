@@ -8,11 +8,6 @@ import { WikiLinkMenu, type WikiLinkMenuRef, type WikiLinkItem } from "./WikiLin
 
 export const mockDocuments: WikiLinkItem[] = [
   { title: "Welcome to Sovereign", id: "doc-welcome" },
-  { title: "Field Survey Specification", id: "doc-field-spec" },
-  { title: "Local AI & WebGPU Roadmap", id: "doc-ai-roadmap" },
-  { title: "Bi-Directional Knowledge Graph", id: "doc-knowledge-graph" },
-  { title: "OPFS Storage Architecture", id: "doc-opfs-storage" },
-  { title: "CRDT P2P Sync Protocol", id: "doc-crdt-sync" },
 ]
 
 export interface WikiLinkOptions {
